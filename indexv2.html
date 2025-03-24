@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moje Projekty</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px;
+        }
+        .project {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            text-align: center;
+        }
+        .project img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        .project a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: white;
+            background: #007bff;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .project a:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Moje Projekty</h1>
+    <div class="container" id="gallery"></div>
+    
+    <script>
+        const projects = [
+            { image: "motylek.JPG", link: "https://www.vinted.pl/items/6002040306-motyl-czarny" },
+            { image: "projekt2.jpg", link: "https://vinted.pl/projekt2" }
+        ];
+        
+        const gallery = document.getElementById("gallery");
+        projects.forEach(proj => {
+            let div = document.createElement("div");
+            div.classList.add("project");
+            div.innerHTML = `<img src="${proj.image}" alt="Projekt">
+                             <a href="${proj.link}" target="_blank">Kup Teraz</a>`;
+            gallery.appendChild(div);
+        });
+    </script>
+</body>
+</html>
