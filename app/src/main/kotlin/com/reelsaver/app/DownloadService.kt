@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.reelsaver.app.data.Settings
+import com.reelsaver.app.extractor.SourceHost
 import com.reelsaver.app.extractor.VideoExtractor
 import com.reelsaver.app.extractor.VideoMeta
 import com.reelsaver.app.storage.Downloader
@@ -36,22 +37,34 @@ class DownloadService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        val url = intent?.getStringExtra(EXTRA_URL)
-        if (url.isNullOrBlank()) {
+        val pageUrl = intent?.getStringExtra(EXTRA_URL)
+        val directUrl = intent?.getStringExtra(EXTRA_DIRECT_VIDEO_URL)
+        val referer = intent?.getStringExtra(EXTRA_REFERER)
+        if (pageUrl.isNullOrBlank() && directUrl.isNullOrBlank()) {
             stopSelfSafely(startId)
             return START_NOT_STICKY
         }
         val jobId = nextJobId.getAndIncrement()
         startForegroundForJob(getString(R.string.notif_starting))
-        lifecycleScope.launch { runJob(jobId, url, startId) }
+        lifecycleScope.launch { runJob(jobId, pageUrl.orEmpty(), directUrl, referer, startId) }
         return START_NOT_STICKY
     }
 
-    private suspend fun runJob(jobId: Int, url: String, startId: Int) {
+    private suspend fun runJob(
+        jobId: Int,
+        pageUrl: String,
+        directUrl: String?,
+        referer: String?,
+        startId: Int
+    ) {
         var tempFile: File? = null
         try {
-            updateProgress(getString(R.string.notif_extracting), null)
-            val meta = withContext(Dispatchers.IO) { VideoExtractor.extract(url, settings) }
+            val meta: VideoMeta = if (!directUrl.isNullOrBlank()) {
+                buildDirectMeta(pageUrl, directUrl, referer)
+            } else {
+                updateProgress(getString(R.string.notif_extracting), null)
+                withContext(Dispatchers.IO) { VideoExtractor.extract(pageUrl, settings) }
+            }
 
             updateProgress(getString(R.string.notif_downloading), 0)
             tempFile = File(cacheDir, "dl_${System.currentTimeMillis()}.mp4")
@@ -218,10 +231,34 @@ class DownloadService : LifecycleService() {
     private fun notificationManager(): NotificationManager =
         getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+    private fun buildDirectMeta(pageUrl: String, directUrl: String, referer: String?): VideoMeta {
+        val host = when {
+            pageUrl.contains("tiktok.com") -> SourceHost.TIKTOK
+            else -> SourceHost.INSTAGRAM
+        }
+        val shortcode = INSTAGRAM_SHORTCODE.find(pageUrl)?.groupValues?.get(1)
+            ?: TIKTOK_VIDEO_ID.find(pageUrl)?.groupValues?.get(1)
+        return VideoMeta(
+            downloadUrl = directUrl,
+            sourceHost = host,
+            authorHandle = null,
+            shortcode = shortcode,
+            refererUrl = referer ?: when (host) {
+                SourceHost.INSTAGRAM -> "https://www.instagram.com/"
+                SourceHost.TIKTOK -> "https://www.tiktok.com/"
+            }
+        )
+    }
+
     companion object {
         const val EXTRA_URL = "extra_url"
+        const val EXTRA_DIRECT_VIDEO_URL = "extra_direct_video_url"
+        const val EXTRA_REFERER = "extra_referer"
         private const val FOREGROUND_NOTIF_ID = 1
         private const val CHANNEL_PROGRESS = "reelsaver.progress"
         private const val CHANNEL_DONE = "reelsaver.done"
+        private val INSTAGRAM_SHORTCODE =
+            Regex("""instagram\.com/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)""")
+        private val TIKTOK_VIDEO_ID = Regex("""tiktok\.com/[^/]+/video/(\d+)""")
     }
 }

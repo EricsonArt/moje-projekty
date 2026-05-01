@@ -32,6 +32,12 @@
             android:label="@string/ig_login_title" />
 
         <activity
+            android:name=".WebDownloaderActivity"
+            android:exported="false"
+            android:label="@string/web_dl_title"
+            android:excludeFromRecents="true" />
+
+        <activity
             android:name=".ShareReceiverActivity"
             android:exported="true"
             android:label="@string/share_target_label"

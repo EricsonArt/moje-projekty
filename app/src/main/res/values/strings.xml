@@ -29,6 +29,9 @@
     <string name="action_copy">Kopiuj</string>
 
     <string name="ig_login_title">Logowanie Instagram</string>
+    <string name="web_dl_title">Pobieranie</string>
+    <string name="web_dl_hint">Trwa pobieranie przez snapinsta.app — zostaw to okno otwarte.</string>
+    <string name="web_dl_captured">Złapano link do filmu — pobieram do galerii…</string>
     <string name="ig_login_hint">Zaloguj się normalnie. Po zalogowaniu okno zamknie się automatycznie.</string>
     <string name="ig_login_hint_done_almost">Logowanie wykryte — kończenie…</string>
     <string name="ig_login_hint_done">Zalogowano — zamykanie okna…</string>

@@ -3,6 +3,8 @@ package com.reelsaver.app.data
 import android.content.Context
 import androidx.core.content.edit
 
+enum class IgMode { PUBLIC_WEB, LOGGED_IN }
+
 class Settings(context: Context) {
 
     private val prefs = context.applicationContext
@@ -28,6 +30,11 @@ class Settings(context: Context) {
         get() = prefs.getString(KEY_IG_USERNAME, null)?.takeIf { it.isNotBlank() }
         set(v) = prefs.edit { if (v.isNullOrBlank()) remove(KEY_IG_USERNAME) else putString(KEY_IG_USERNAME, v) }
 
+    var igMode: IgMode
+        get() = IgMode.entries.firstOrNull { it.name == prefs.getString(KEY_IG_MODE, null) }
+            ?: IgMode.PUBLIC_WEB
+        set(v) = prefs.edit { putString(KEY_IG_MODE, v.name) }
+
     fun clearInstagramSession() {
         prefs.edit {
             remove(KEY_IG_COOKIES)
@@ -41,6 +48,7 @@ class Settings(context: Context) {
         private const val KEY_AUTO_TRANSCRIBE = "auto_transcribe"
         private const val KEY_IG_COOKIES = "ig_cookies"
         private const val KEY_IG_USERNAME = "ig_username"
+        private const val KEY_IG_MODE = "ig_mode"
 
         val SUPPORTED_LANGUAGES = linkedMapOf(
             "pl" to "Polski",

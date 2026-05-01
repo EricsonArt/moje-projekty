@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
+import com.reelsaver.app.data.IgMode
+import com.reelsaver.app.data.Settings
 
 class ShareReceiverActivity : ComponentActivity() {
 
@@ -29,6 +31,19 @@ class ShareReceiverActivity : ComponentActivity() {
             toast(getString(R.string.toast_no_link))
             return
         }
+        val settings = Settings(this)
+        val isInstagram = url.contains("instagram.com")
+        val usePublicWeb = isInstagram && settings.igMode == IgMode.PUBLIC_WEB
+
+        if (usePublicWeb) {
+            val webIntent = Intent(this, WebDownloaderActivity::class.java).apply {
+                putExtra(WebDownloaderActivity.EXTRA_PAGE_URL, url)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(webIntent)
+            return
+        }
+
         val service = Intent(this, DownloadService::class.java).apply {
             putExtra(DownloadService.EXTRA_URL, url)
         }
