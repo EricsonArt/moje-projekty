@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ReelSaver</string>
+    <string name="share_target_label">Zapisz przez ReelSaver</string>
+
+    <string name="toast_no_link">Nie znaleziono linku w udostępnionej wiadomości.</string>
+    <string name="toast_started">Pobieranie rozpoczęte…</string>
+
+    <string name="channel_progress">Pobieranie</string>
+    <string name="channel_done">Powiadomienia o zakończeniu</string>
+
+    <string name="notif_progress_title">ReelSaver</string>
+    <string name="notif_starting">Przygotowywanie…</string>
+    <string name="notif_extracting">Pobieram informacje o filmie…</string>
+    <string name="notif_downloading">Zapisywanie wideo…</string>
+
+    <string name="notif_done_title">Zapisano</string>
+    <string name="notif_done_text">Film jest w galerii (Movies/ReelSaver). Stuknij, aby otworzyć.</string>
+
+    <string name="notif_error_title">Nie udało się zapisać</string>
+</resources>
