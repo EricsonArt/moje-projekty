@@ -13,7 +13,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ReelSaver">
+        android:theme="@style/Theme.ReelSaver"
+        android:usesCleartextTraffic="false">
 
         <activity
             android:name=".MainActivity"
@@ -24,6 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".InstagramLoginActivity"
+            android:exported="false"
+            android:label="@string/ig_login_title" />
 
         <activity
             android:name=".ShareReceiverActivity"
@@ -43,6 +49,10 @@
             android:name=".DownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <receiver
+            android:name=".ClipboardCopyReceiver"
+            android:exported="false" />
 
     </application>
 

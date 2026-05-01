@@ -1,38 +1,45 @@
 # Gotowy APK do instalacji
 
-**Plik:** [`ReelSaver-1.0-release.apk`](./ReelSaver-1.0-release.apk) (923 KB)
+**Najnowsza wersja:** [`ReelSaver-1.1-release.apk`](./ReelSaver-1.1-release.apk) (~1.3 MB)
 
-- Zminifikowany przez R8.
-- Podpisany kluczem debug Android Studio (`androiddebugkey`) — instaluje się
-  na każdym telefonie, ale nie da się go zaktualizować nową wersją podpisaną
-  innym kluczem (wtedy trzeba odinstalować i zainstalować ponownie).
-- `applicationId`: `com.reelsaver.app`
-- `versionName`: `1.0`
-- `minSdk`: 26 (Android 8.0+)
-- `targetSdk`: 34 (Android 14)
+## Co nowego w 1.1
 
-## Jak zainstalować na telefonie
+- **Logowanie do Instagrama (WebView)** — pobiera Reelsy też z prywatnych
+  profili, do których masz dostęp. Po zalogowaniu apka używa wewnętrznego
+  API mobilnej apki IG.
+- **Transkrypcja** — Whisper (OpenAI) + tłumaczenie GPT-4o-mini na
+  wybrany język. Włącz w ustawieniach apki, podaj klucz OpenAI.
+- Lepsza obsługa CDN-ów Instagrama (poprawne `Referer`).
+
+## Instalacja
 
 1. Otwórz tę stronę w przeglądarce na telefonie.
-2. Stuknij plik APK powyżej → **Download** / **Pobierz**.
-3. Kiedy plik się ściągnie, otwórz go (np. z paska powiadomień
-   „Pobieranie zakończone" albo z folderu Pobrane w menedżerze plików).
-4. System poprosi o zezwolenie na **Instaluj nieznane aplikacje** dla
-   przeglądarki / menedżera plików — zaakceptuj.
-5. Stuknij **Zainstaluj**.
-6. Po pierwszym uruchomieniu zezwól na powiadomienia.
+2. Stuknij plik APK powyżej → **Pobierz**.
+3. Otwórz pobrany plik (z paska powiadomień lub z folderu Pobrane).
+4. Jeśli system zablokuje: **Ustawienia** → zezwól danej przeglądarce na
+   instalowanie nieznanych aplikacji → wróć i **Zainstaluj**.
+5. Po instalacji: zezwól na powiadomienia, otwórz apkę, **zaloguj się
+   do Instagrama** (z konta zapasowego — patrz ostrzeżenie niżej).
 
-## Jak używać
+> Aktualizacja z 1.0 — kluczem podpisującym jest standardowy debug keystore
+> Android Studio. Jeśli twój debug keystore się różni od mojego (np.
+> instalujesz pierwszy raz na świeżym telefonie po wcześniejszej wersji
+> 1.0 zbudowanej gdzie indziej), Android odmówi update'u — odinstaluj 1.0
+> i zainstaluj 1.1 od zera.
 
-1. W Instagramie otwórz Reels i stuknij **Udostępnij** (strzałka).
-2. W arkuszu Androida wybierz **ReelSaver**.
-3. Film zapisze się w `Movies/ReelSaver/` (galeria → folder ReelSaver).
-4. Powiadomienie „Zapisano" → stuknij, aby otworzyć film.
+## Klucz OpenAI
 
-To samo dla TikToka — **Udostępnij → ReelSaver**.
+Transkrypcja wymaga klucza z https://platform.openai.com/api-keys.
+Wklej go w apce w sekcji **Transkrypcja**. Koszty: ~0.006 USD/minutę audio
++ ułamki centa za tłumaczenie. Limit pliku Whisper: **25 MB** (Reelsy/TikToki
+mieszczą się prawie zawsze).
 
-## Jeśli przestanie działać
+## Ostrzeżenia
 
-Instagram regularnie zmienia format strony Reelsa. Jeśli pobieranie zaczyna
-zwracać błąd „Nie znaleziono URL filmu", napisz mi i zaktualizuję
-ekstraktor — jest to normalne zjawisko dla każdej apki tego typu.
+- **Logowanie do IG = ryzyko bana konta.** Instagram wykrywa
+  zautomatyzowane pobieranie plików. Używaj **konta zapasowego**, nie
+  głównego. Apka nie wysyła nigdzie twoich ciasteczek poza serwery
+  Instagrama.
+- Klucz OpenAI trzymany jest w SharedPreferences telefonu (nie w chmurze).
+  Jeśli zgubisz telefon, wyrejestruj klucz w panelu OpenAI.
+- TikTok działa publicznie bez logowania.

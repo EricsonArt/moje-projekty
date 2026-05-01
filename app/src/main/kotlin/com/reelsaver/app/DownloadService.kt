@@ -11,19 +11,26 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.reelsaver.app.data.Settings
 import com.reelsaver.app.extractor.VideoExtractor
+import com.reelsaver.app.extractor.VideoMeta
+import com.reelsaver.app.storage.Downloader
 import com.reelsaver.app.storage.MediaStoreSaver
+import com.reelsaver.app.transcribe.TranscriptionApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
 class DownloadService : LifecycleService() {
 
     private val nextJobId = AtomicInteger(1000)
+    private lateinit var settings: Settings
 
     override fun onCreate() {
         super.onCreate()
+        settings = Settings(this)
         ensureChannels()
     }
 
@@ -35,35 +42,73 @@ class DownloadService : LifecycleService() {
             return START_NOT_STICKY
         }
         val jobId = nextJobId.getAndIncrement()
-        startForegroundForJob(jobId, getString(R.string.notif_starting))
+        startForegroundForJob(getString(R.string.notif_starting))
         lifecycleScope.launch { runJob(jobId, url, startId) }
         return START_NOT_STICKY
     }
 
     private suspend fun runJob(jobId: Int, url: String, startId: Int) {
+        var tempFile: File? = null
         try {
-            updateProgressNotification(jobId, getString(R.string.notif_extracting), null)
-            val meta = withContext(Dispatchers.IO) { VideoExtractor.extract(url) }
+            updateProgress(getString(R.string.notif_extracting), null)
+            val meta = withContext(Dispatchers.IO) { VideoExtractor.extract(url, settings) }
 
-            updateProgressNotification(jobId, getString(R.string.notif_downloading), 0)
-            val savedUri = withContext(Dispatchers.IO) {
-                MediaStoreSaver.saveVideo(this@DownloadService, meta) { read, total ->
+            updateProgress(getString(R.string.notif_downloading), 0)
+            tempFile = File(cacheDir, "dl_${System.currentTimeMillis()}.mp4")
+            withContext(Dispatchers.IO) {
+                Downloader.download(meta.downloadUrl, tempFile, meta.refererUrl) { read, total ->
                     val pct = if (total > 0) ((read * 100) / total).toInt() else null
-                    updateProgressNotification(jobId, getString(R.string.notif_downloading), pct)
+                    updateProgress(getString(R.string.notif_downloading), pct)
                 }
             }
+
+            updateProgress(getString(R.string.notif_saving), null)
+            val savedUri = withContext(Dispatchers.IO) {
+                MediaStoreSaver.saveVideoFromFile(this@DownloadService, tempFile!!, meta)
+            }
             postDoneNotification(jobId, savedUri)
+
+            if (settings.autoTranscribe) {
+                runTranscription(jobId, meta, tempFile)
+            }
         } catch (t: Throwable) {
             postErrorNotification(jobId, t.message ?: t::class.java.simpleName)
         } finally {
+            tempFile?.delete()
             stopSelfSafely(startId)
         }
     }
 
-    private fun startForegroundForJob(jobId: Int, text: String) {
-        val notif = baseBuilder(text)
-            .setProgress(0, 0, true)
-            .build()
+    private suspend fun runTranscription(jobId: Int, meta: VideoMeta, file: File) {
+        val key = settings.openAiApiKey
+        if (key.isNullOrBlank()) {
+            postErrorNotification(
+                jobId + 1,
+                getString(R.string.err_no_api_key)
+            )
+            return
+        }
+        try {
+            updateProgress(getString(R.string.notif_transcribing), null)
+            val api = TranscriptionApi(key)
+            val transcript = withContext(Dispatchers.IO) { api.transcribe(file) }
+
+            updateProgress(getString(R.string.notif_translating), null)
+            val translated = withContext(Dispatchers.IO) {
+                api.translate(transcript.text, settings.targetLanguage, transcript.detectedLanguage)
+            }
+
+            withContext(Dispatchers.IO) {
+                MediaStoreSaver.saveTranscript(this@DownloadService, translated, meta)
+            }
+            postTranscriptNotification(jobId + 1, translated)
+        } catch (t: Throwable) {
+            postErrorNotification(jobId + 1, t.message ?: t::class.java.simpleName)
+        }
+    }
+
+    private fun startForegroundForJob(text: String) {
+        val notif = baseProgressBuilder(text).setProgress(0, 0, true).build()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(FOREGROUND_NOTIF_ID, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         } else {
@@ -71,8 +116,8 @@ class DownloadService : LifecycleService() {
         }
     }
 
-    private fun updateProgressNotification(jobId: Int, text: String, percent: Int?) {
-        val builder = baseBuilder(text)
+    private fun updateProgress(text: String, percent: Int?) {
+        val builder = baseProgressBuilder(text)
         if (percent == null) builder.setProgress(0, 0, true)
         else builder.setProgress(100, percent, false)
         notificationManager().notify(FOREGROUND_NOTIF_ID, builder.build())
@@ -97,18 +142,39 @@ class DownloadService : LifecycleService() {
         notificationManager().notify(jobId, notif)
     }
 
+    private fun postTranscriptNotification(jobId: Int, text: String) {
+        val preview = if (text.length > 600) text.take(600) + "…" else text
+        val copyIntent = Intent(this, ClipboardCopyReceiver::class.java).apply {
+            action = ClipboardCopyReceiver.ACTION_COPY
+            putExtra(ClipboardCopyReceiver.EXTRA_TEXT, text)
+        }
+        val pi = PendingIntent.getBroadcast(
+            this, jobId, copyIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val notif = NotificationCompat.Builder(this, CHANNEL_DONE)
+            .setSmallIcon(android.R.drawable.ic_menu_edit)
+            .setContentTitle(getString(R.string.notif_transcript_title))
+            .setContentText(preview.lineSequence().firstOrNull() ?: "")
+            .setStyle(NotificationCompat.BigTextStyle().bigText(preview))
+            .addAction(0, getString(R.string.action_copy), pi)
+            .setAutoCancel(true)
+            .build()
+        notificationManager().notify(jobId, notif)
+    }
+
     private fun postErrorNotification(jobId: Int, message: String) {
         val notif = NotificationCompat.Builder(this, CHANNEL_DONE)
             .setSmallIcon(android.R.drawable.stat_notify_error)
             .setContentTitle(getString(R.string.notif_error_title))
-            .setContentText(message)
+            .setContentText(message.lineSequence().firstOrNull() ?: "")
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setAutoCancel(true)
             .build()
         notificationManager().notify(jobId, notif)
     }
 
-    private fun baseBuilder(text: String): NotificationCompat.Builder =
+    private fun baseProgressBuilder(text: String): NotificationCompat.Builder =
         NotificationCompat.Builder(this, CHANNEL_PROGRESS)
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle(getString(R.string.notif_progress_title))

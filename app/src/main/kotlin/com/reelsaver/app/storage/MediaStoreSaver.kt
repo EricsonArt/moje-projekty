@@ -8,32 +8,15 @@ import android.os.Environment
 import android.provider.MediaStore
 import com.reelsaver.app.extractor.SourceHost
 import com.reelsaver.app.extractor.VideoMeta
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import java.io.File
 import java.io.IOException
-import java.io.OutputStream
-import java.util.concurrent.TimeUnit
 
 object MediaStoreSaver {
 
-    private const val UA =
-        "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 " +
-        "(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
-
-    private val client: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .followRedirects(true)
-        .build()
-
     @Throws(IOException::class)
-    fun saveVideo(
-        context: Context,
-        meta: VideoMeta,
-        onProgress: (bytesRead: Long, totalBytes: Long) -> Unit
-    ): Uri {
+    fun saveVideoFromFile(context: Context, source: File, meta: VideoMeta): Uri {
         val resolver = context.contentResolver
-        val displayName = buildFileName(meta)
+        val displayName = buildVideoFileName(meta)
         val relativePath = Environment.DIRECTORY_MOVIES + "/ReelSaver"
 
         val values = ContentValues().apply {
@@ -52,17 +35,15 @@ object MediaStoreSaver {
         }
 
         val itemUri = resolver.insert(collection, values)
-            ?: throw IOException("MediaStore odrzucił wpis.")
+            ?: throw IOException("MediaStore odrzucił wpis (wideo).")
 
         try {
             resolver.openOutputStream(itemUri)?.use { out ->
-                downloadTo(meta.downloadUrl, out, onProgress)
-            } ?: throw IOException("Nie udało się otworzyć strumienia zapisu.")
+                source.inputStream().use { input -> input.copyTo(out) }
+            } ?: throw IOException("Nie udało się otworzyć strumienia zapisu (wideo).")
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val finalize = ContentValues().apply {
-                    put(MediaStore.Video.Media.IS_PENDING, 0)
-                }
+                val finalize = ContentValues().apply { put(MediaStore.Video.Media.IS_PENDING, 0) }
                 resolver.update(itemUri, finalize, null, null)
             }
             return itemUri
@@ -72,38 +53,44 @@ object MediaStoreSaver {
         }
     }
 
-    private fun downloadTo(
-        url: String,
-        out: OutputStream,
-        onProgress: (Long, Long) -> Unit
-    ) {
-        val req = Request.Builder()
-            .url(url)
-            .header("User-Agent", UA)
-            .header("Referer", "https://www.instagram.com/")
-            .build()
+    @Throws(IOException::class)
+    fun saveTranscript(context: Context, content: String, meta: VideoMeta): Uri {
+        val resolver = context.contentResolver
+        val baseName = buildVideoFileName(meta).removeSuffix(".mp4")
+        val displayName = "$baseName.txt"
 
-        client.newCall(req).execute().use { resp ->
-            if (!resp.isSuccessful) {
-                throw IOException("HTTP ${resp.code} przy pobieraniu pliku.")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
+                put(MediaStore.MediaColumns.RELATIVE_PATH,
+                    Environment.DIRECTORY_DOCUMENTS + "/ReelSaver")
+                put(MediaStore.MediaColumns.IS_PENDING, 1)
             }
-            val body = resp.body ?: throw IOException("Pusta odpowiedź pliku.")
-            val total = body.contentLength()
-            body.byteStream().use { input ->
-                val buffer = ByteArray(64 * 1024)
-                var read: Int
-                var done = 0L
-                while (input.read(buffer).also { read = it } != -1) {
-                    out.write(buffer, 0, read)
-                    done += read
-                    onProgress(done, total)
-                }
-                out.flush()
+            val collection =
+                MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            val itemUri = resolver.insert(collection, values)
+                ?: throw IOException("MediaStore odrzucił wpis (transkrypcja).")
+            try {
+                resolver.openOutputStream(itemUri)?.use { it.write(content.toByteArray(Charsets.UTF_8)) }
+                    ?: throw IOException("Nie udało się otworzyć strumienia (transkrypcja).")
+                val finalize = ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }
+                resolver.update(itemUri, finalize, null, null)
+                return itemUri
+            } catch (t: Throwable) {
+                runCatching { resolver.delete(itemUri, null, null) }
+                throw t
             }
+        } else {
+            val docs = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            val dir = File(docs, "ReelSaver").apply { mkdirs() }
+            val out = File(dir, displayName)
+            out.writeText(content, Charsets.UTF_8)
+            return Uri.fromFile(out)
         }
     }
 
-    private fun buildFileName(meta: VideoMeta): String {
+    private fun buildVideoFileName(meta: VideoMeta): String {
         val prefix = when (meta.sourceHost) {
             SourceHost.INSTAGRAM -> "ig"
             SourceHost.TIKTOK -> "tt"

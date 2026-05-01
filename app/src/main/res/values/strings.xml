@@ -5,6 +5,7 @@
 
     <string name="toast_no_link">Nie znaleziono linku w udostępnionej wiadomości.</string>
     <string name="toast_started">Pobieranie rozpoczęte…</string>
+    <string name="toast_copied">Skopiowano do schowka</string>
 
     <string name="channel_progress">Pobieranie</string>
     <string name="channel_done">Powiadomienia o zakończeniu</string>
@@ -13,9 +14,23 @@
     <string name="notif_starting">Przygotowywanie…</string>
     <string name="notif_extracting">Pobieram informacje o filmie…</string>
     <string name="notif_downloading">Zapisywanie wideo…</string>
+    <string name="notif_saving">Zapisuję do galerii…</string>
+    <string name="notif_transcribing">Transkrypcja audio (Whisper)…</string>
+    <string name="notif_translating">Tłumaczenie tekstu…</string>
 
     <string name="notif_done_title">Zapisano</string>
     <string name="notif_done_text">Film jest w galerii (Movies/ReelSaver). Stuknij, aby otworzyć.</string>
 
+    <string name="notif_transcript_title">Transkrypcja gotowa</string>
+
     <string name="notif_error_title">Nie udało się zapisać</string>
+    <string name="err_no_api_key">Brak klucza OpenAI w ustawieniach — transkrypcja pominięta.</string>
+
+    <string name="action_copy">Kopiuj</string>
+
+    <string name="ig_login_title">Logowanie Instagram</string>
+    <string name="ig_login_hint">Zaloguj się normalnie. Po zalogowaniu okno zamknie się automatycznie.</string>
+    <string name="ig_login_hint_done_almost">Logowanie wykryte — kończenie…</string>
+    <string name="ig_login_hint_done">Zalogowano — zamykanie okna…</string>
+    <string name="ig_login_done_toast">Sesja Instagrama zapisana.</string>
 </resources>
