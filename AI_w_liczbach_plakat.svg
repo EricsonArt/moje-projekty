@@ -1,537 +1,288 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
-  AI W LICZBACH – PLAKAT 100 x 60 cm (poziomy)
-  Plik wektorowy edytowalny w Adobe Illustrator (File > Open).
-  Po otwarciu:
-   - File > Document Color Mode > CMYK Color (wymagane do druku)
-   - Document Setup > Bleed = 3 mm
-   - Type > Create Outlines (przed wyslaniem do drukarni)
-  Paleta (HEX -> CMYK):
-   #0A2540 (granat)        C95 M80 Y45 K55
-   #00D4FF (cyjan)         C70 M0  Y0  K0
-   #FF6B35 (pomaranczowy)  C0  M70 Y80 K0
-   #6B7280 (szary)         C50 M40 Y30 K15
-   #F3F4F6 (jasnoszary)    C5  M3  Y3  K0
-   #FFFFFF (bialy)         C0  M0  Y0  K0
-  Jednostka: mm. Plakat 1000 x 600 mm, spady 3 mm dookola (uwzglednione w viewBox 1006 x 606).
+  AI W LICZBACH – wersja prostsza (styl jak Twoj oryginal)
+  Edytowalna w Adobe Illustrator (File > Open).
+  Kanwa 1600 x 1000, jednostki = piksele (1 user-unit).
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="1006mm" height="606mm"
-     viewBox="-3 -3 1006 606">
+     width="1600" height="1000" viewBox="0 0 1600 1000">
 
   <defs>
-    <!-- Gradient akcent (slupki rynku) -->
-    <linearGradient id="gradMarket" x1="0" y1="1" x2="0" y2="0">
-      <stop offset="0"   stop-color="#00D4FF"/>
-      <stop offset="1"   stop-color="#FF6B35"/>
+    <!-- Gradient slupkow rynku (cyjan -> koral) -->
+    <linearGradient id="gradGrowth" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#5BC0DE"/>
+      <stop offset="1" stop-color="#E07A5F"/>
     </linearGradient>
-    <linearGradient id="gradForecast" x1="0" y1="1" x2="0" y2="0">
-      <stop offset="0"   stop-color="#FF6B35"/>
-      <stop offset="1"   stop-color="#FFB454"/>
-    </linearGradient>
-    <linearGradient id="gradBar" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0"   stop-color="#00D4FF"/>
-      <stop offset="1"   stop-color="#7FE7FF"/>
+    <!-- Tlo glowne -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1A1F2B"/>
+      <stop offset="1" stop-color="#0F1521"/>
     </linearGradient>
 
     <style><![CDATA[
-      /* Rozmiary fontow w punktach (pt). 1pt ≈ 0.353 mm. */
-      .ttl      { font-family:'Montserrat','Inter','Arial Black',sans-serif; font-weight:900; fill:#FFFFFF; }
-      .ttl-acc  { font-family:'Montserrat','Inter',sans-serif; font-weight:900; fill:#00D4FF; }
-      .lead     { font-family:'Inter','Montserrat',sans-serif; font-weight:500; fill:#FFFFFF; }
-      .h2       { font-family:'Montserrat','Inter',sans-serif; font-weight:800; fill:#FFFFFF; }
-      .h2-acc   { font-family:'Montserrat','Inter',sans-serif; font-weight:800; fill:#00D4FF; }
-      .h3       { font-family:'Montserrat','Inter',sans-serif; font-weight:700; fill:#FFFFFF; }
-      .sub      { font-family:'Inter',sans-serif; font-weight:600; fill:#9AA7BD; }
-      .th       { font-family:'Montserrat',sans-serif; font-weight:800; fill:#00D4FF; }
-      .td       { font-family:'Inter','Arial',sans-serif; font-weight:700; fill:#FFFFFF; }
-      .td-s     { font-family:'Inter','Arial',sans-serif; font-weight:500; fill:#CDD6E4; }
-      .axis     { font-family:'Inter',sans-serif; font-weight:500; fill:#9AA7BD; }
-      .val      { font-family:'Montserrat',sans-serif; font-weight:700; fill:#FFFFFF; }
-      .val-acc  { font-family:'Montserrat',sans-serif; font-weight:800; fill:#FF6B35; }
-      .big      { font-family:'Montserrat','Inter',sans-serif; font-weight:900; }
-      .yr       { font-family:'Montserrat',sans-serif; font-weight:900; fill:#FFFFFF; }
-      .src      { font-family:'Inter',sans-serif; font-weight:500; fill:#9AA7BD; }
+      .title    { font-family: 'Playfair Display','Georgia','Times New Roman',serif; font-weight: 900; fill:#FFFFFF; }
+      .subtitle { font-family: 'Playfair Display','Georgia',serif; font-weight: 700; font-style: italic; fill:#FFFFFF; }
+      .tagline  { font-family: 'Georgia',serif; font-weight: 400; font-style: italic; fill:#9AA3B2; }
+      .h2       { font-family: 'Georgia',serif; font-weight: 700; fill:#FFFFFF; }
+      .th       { font-family: 'Georgia',serif; font-weight: 700; font-style: italic; fill:#5BC0DE; }
+      .td       { font-family: 'Georgia',serif; font-weight: 700; fill:#FFFFFF; }
+      .td-s     { font-family: 'Georgia',serif; font-weight: 400; fill:#E6E8EE; }
+      .axis     { font-family: 'Georgia',serif; font-weight: 400; fill:#9AA3B2; }
+      .lbl      { font-family: 'Georgia',serif; font-weight: 700; fill:#FFFFFF; }
+      .yr       { font-family: 'Georgia',serif; font-weight: 700; fill:#FFFFFF; }
     ]]></style>
   </defs>
 
-  <!-- ============================================================
-       TLO GLOWNE
-       ============================================================ -->
-  <rect x="-3" y="-3" width="1006" height="606" fill="#0A2540"/>
-
-  <!-- subtelny gradient ozdobny -->
-  <rect x="-3" y="-3" width="1006" height="606" fill="url(#bgDecor)" opacity="0.5"/>
-  <defs>
-    <radialGradient id="bgDecor" cx="0.85" cy="0.1" r="0.6">
-      <stop offset="0" stop-color="#13355C" stop-opacity="1"/>
-      <stop offset="1" stop-color="#0A2540" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
+  <!-- TLO -->
+  <rect x="0" y="0" width="1600" height="1000" fill="url(#bg)"/>
 
   <!-- ============================================================
-       1. PASEK NAGLOWKOWY (y: 0 - 95)
+       NAGLOWEK
        ============================================================ -->
   <g id="header">
-    <!-- linia akcentowa pod naglowkiem -->
-    <rect x="25" y="92" width="950" height="0.8" fill="#00D4FF" opacity="0.6"/>
+    <text class="title"    x="800" y="78"  font-size="56" text-anchor="middle" letter-spacing="3">AI W LICZBACH</text>
+    <text class="subtitle" x="800" y="108" font-size="20" text-anchor="middle">Jak sztuczna inteligencja zdominowala swiat 2020-2026</text>
+    <text class="tagline"  x="800" y="138" font-size="16" text-anchor="middle">6 lat • 1 mld+ uzytkownikow • 750 mld USD rynku • 78% firm</text>
+  </g>
 
-    <!-- Tytul -->
-    <text class="ttl" x="40" y="48" font-size="36" letter-spacing="2">
-      AI W <tspan class="ttl-acc">LICZBACH</tspan>
-    </text>
-    <text class="lead" x="40" y="68" font-size="6.5" fill="#9AA7BD" font-weight="600">
-      Jak sztuczna inteligencja zdominowala swiat 2020 – 2026
-    </text>
-    <text class="lead" x="40" y="84" font-size="3.8" fill="#CDD6E4">
-      W ciagu 6 lat AI z laboratoryjnej ciekawostki stalo sie technologia, z ktorej codziennie korzysta ponad miliard ludzi.
-    </text>
+  <!-- ============================================================
+       TABELA 1 (lewa) – TOP 6 AI : firma / uzytkownicy / zastosowanie
+       ============================================================ -->
+  <g id="tab1" transform="translate(40,170)">
+    <!-- Naglowek -->
+    <rect x="0" y="0" width="500" height="36" fill="none" stroke="#FFFFFF" stroke-width="1.2"/>
+    <text class="th" x="14"  y="24" font-size="15">AI</text>
+    <text class="th" x="110" y="24" font-size="15">firma</text>
+    <text class="th" x="220" y="24" font-size="15">uzytkownicy</text>
+    <text class="th" x="350" y="24" font-size="15">zastosowanie</text>
 
-    <!-- BIG STAT 1: 1+ MLD przy tytule -->
-    <g transform="translate(740,20)">
-      <text class="big" x="0" y="38" font-size="22" fill="#FF6B35">1+ MLD</text>
-      <text class="td-s" x="0" y="56" font-size="4" fill="#FFFFFF">ludzi uzywa AI</text>
-      <text class="td-s" x="0" y="68" font-size="4" fill="#9AA7BD">co najmniej raz w tygodniu</text>
+    <!-- Wiersze -->
+    <g font-size="13">
+      <rect x="0" y="36"  width="500" height="32" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="58">ChatGPT</text>
+      <text class="td-s" x="110" y="58">OpenAI</text>
+      <text class="td-s" x="220" y="58">800 mln/tydz</text>
+      <text class="td-s" x="350" y="58">rozmowy, kod, analiza</text>
+
+      <rect x="0" y="68"  width="500" height="32" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="90">Gemini</text>
+      <text class="td-s" x="110" y="90">Google</text>
+      <text class="td-s" x="220" y="90">750 mln/mies</text>
+      <text class="td-s" x="350" y="90">Search, Gmail, Android</text>
+
+      <rect x="0" y="100" width="500" height="32" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="122">Copilot</text>
+      <text class="td-s" x="110" y="122">Microsoft</text>
+      <text class="td-s" x="220" y="122">~150 mln</text>
+      <text class="td-s" x="350" y="122">Office 365, GitHub</text>
+
+      <rect x="0" y="132" width="500" height="32" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="154">Claude</text>
+      <text class="td-s" x="110" y="154">Anthropic</text>
+      <text class="td-s" x="220" y="154">19 mln/mies</text>
+      <text class="td-s" x="350" y="154">programowanie, biznes</text>
+
+      <rect x="0" y="164" width="500" height="32" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="186">DeepSeek</text>
+      <text class="td-s" x="110" y="186">DeepSeek (CN)</text>
+      <text class="td-s" x="220" y="186">97 mln/mies</text>
+      <text class="td-s" x="350" y="186">open-source, azjat.</text>
+
+      <rect x="0" y="196" width="500" height="32" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="218">Grok</text>
+      <text class="td-s" x="110" y="218">xAI / E. Musk</text>
+      <text class="td-s" x="220" y="218">35 mln/mies</text>
+      <text class="td-s" x="350" y="218">X (Twitter), real-time</text>
     </g>
-    <g transform="translate(880,20)">
-      <text class="big" x="0" y="38" font-size="22" fill="#00D4FF">78%</text>
-      <text class="td-s" x="0" y="56" font-size="4" fill="#FFFFFF">firm wdrozylo AI</text>
-      <text class="td-s" x="0" y="68" font-size="4" fill="#9AA7BD">w przynajmniej 1 obszarze</text>
+
+    <!-- Linie pionowe miedzy kolumnami -->
+    <g stroke="#FFFFFF" stroke-width="0.8">
+      <line x1="100" y1="0" x2="100" y2="228"/>
+      <line x1="210" y1="0" x2="210" y2="228"/>
+      <line x1="340" y1="0" x2="340" y2="228"/>
     </g>
   </g>
 
   <!-- ============================================================
-       2. ROW 1 – Tabela 1 + Wykres 1 + Tabela 2  (y: 105 - 285)
+       WYKRES POZIOMY – uzytkownicy
        ============================================================ -->
+  <g id="bars" transform="translate(580,170)">
+    <text class="h2" x="220" y="0" font-size="20" text-anchor="middle" font-style="italic">miesiecznie aktywni uzytkownicy</text>
 
-  <!-- TABELA 1: TOP 6 AI -->
-  <g id="table1" transform="translate(25,105)">
-    <rect x="0" y="0" width="310" height="180" fill="#0E2D4F" rx="3"/>
-    <text class="h2-acc" x="10" y="14" font-size="6">TOP 6 AI</text>
-    <text class="sub"    x="10" y="24" font-size="2.8">kto z czego korzysta</text>
+    <!-- Os pionowa -->
+    <line x1="100" y1="20" x2="100" y2="230" stroke="#FFFFFF" stroke-width="0.8"/>
 
-    <!-- naglowek tabeli -->
-    <rect x="6" y="30" width="298" height="14" fill="#0A2540" stroke="#00D4FF" stroke-width="0.3" rx="1.5"/>
-    <text class="th" x="12"  y="40" font-size="3.2">AI</text>
-    <text class="th" x="70"  y="40" font-size="3.2">firma</text>
-    <text class="th" x="130" y="40" font-size="3.2">uzytk.</text>
-    <text class="th" x="185" y="40" font-size="3.2">zastosowanie</text>
-
-    <!-- wiersze (6, wys 22) -->
-    <g font-size="3">
-      <rect x="6" y="46"  width="298" height="22" fill="#0F2D50"/>
-      <text class="td"   x="12"  y="60">ChatGPT</text>
-      <text class="td-s" x="70"  y="60">OpenAI</text>
-      <text class="td-s" x="130" y="60">800 mln/tydz</text>
-      <text class="td-s" x="185" y="60">rozmowy, kod, analiza</text>
-
-      <rect x="6" y="68"  width="298" height="22" fill="#0B2747"/>
-      <text class="td"   x="12"  y="82">Gemini</text>
-      <text class="td-s" x="70"  y="82">Google</text>
-      <text class="td-s" x="130" y="82">750 mln/mies</text>
-      <text class="td-s" x="185" y="82">Google Search, Gmail</text>
-
-      <rect x="6" y="90"  width="298" height="22" fill="#0F2D50"/>
-      <text class="td"   x="12"  y="104">Copilot</text>
-      <text class="td-s" x="70"  y="104">Microsoft</text>
-      <text class="td-s" x="130" y="104">~150 mln</text>
-      <text class="td-s" x="185" y="104">Office 365, GitHub</text>
-
-      <rect x="6" y="112" width="298" height="22" fill="#0B2747"/>
-      <text class="td"   x="12"  y="126">Claude</text>
-      <text class="td-s" x="70"  y="126">Anthropic</text>
-      <text class="td-s" x="130" y="126">19 mln/mies</text>
-      <text class="td-s" x="185" y="126">programowanie, biznes</text>
-
-      <rect x="6" y="134" width="298" height="22" fill="#0F2D50"/>
-      <text class="td"   x="12"  y="148">DeepSeek</text>
-      <text class="td-s" x="70"  y="148">DeepSeek (CN)</text>
-      <text class="td-s" x="130" y="148">97 mln/mies</text>
-      <text class="td-s" x="185" y="148">open-source, azjat.</text>
-
-      <rect x="6" y="156" width="298" height="22" fill="#0B2747"/>
-      <text class="td"   x="12"  y="170">Grok</text>
-      <text class="td-s" x="70"  y="170">xAI (Musk)</text>
-      <text class="td-s" x="130" y="170">35 mln/mies</text>
-      <text class="td-s" x="185" y="170">X (Twitter), real-time</text>
-    </g>
-  </g>
-
-  <!-- WYKRES 1: Uzytkownicy AI -->
-  <g id="chart1" transform="translate(345,105)">
-    <rect x="0" y="0" width="310" height="180" fill="#0E2D4F" rx="3"/>
-    <text class="h2-acc" x="10" y="14" font-size="6">UZYTKOWNICY AI</text>
-    <text class="sub"    x="10" y="24" font-size="2.8">najpopularniejsze AI na swiecie • poczatek 2026 (mln)</text>
-
-    <!-- os Y (pionowa) i etykiety -->
-    <line x1="70" y1="32" x2="70" y2="160" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="0.3"/>
-
-    <!-- linie pomocnicze (200, 400, 600, 800) -->
-    <g stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="0.25" stroke-dasharray="1,1.5">
-      <line x1="125" y1="32" x2="125" y2="160"/>
-      <line x1="180" y1="32" x2="180" y2="160"/>
-      <line x1="235" y1="32" x2="235" y2="160"/>
-      <line x1="290" y1="32" x2="290" y2="160"/>
-    </g>
-    <!-- etykiety osi X -->
-    <g class="axis" font-size="2.5">
-      <text x="70"  y="170" text-anchor="middle">0</text>
-      <text x="125" y="170" text-anchor="middle">200</text>
-      <text x="180" y="170" text-anchor="middle">400</text>
-      <text x="235" y="170" text-anchor="middle">600</text>
-      <text x="290" y="170" text-anchor="middle">800</text>
-      <text x="180" y="178" text-anchor="middle" font-size="2.5">mln uzytkownikow</text>
-    </g>
-
-    <!-- skala: 1 mln = 0.275 mm. 800 -> 220 mm szerokosci -->
-    <!-- ChatGPT 800 (WAU) -->
-    <text class="td" x="66" y="42" text-anchor="end" font-size="3">ChatGPT</text>
-    <rect x="70" y="35" width="220" height="10" fill="url(#gradBar)" rx="1"/>
-    <text class="val" x="293" y="42" font-size="2.8">800 mln*</text>
+    <!-- Sloupki – skala: 1 mln = 0.45 px -->
+    <!-- ChatGPT 800 -->
+    <text class="td" x="95" y="40" text-anchor="end" font-size="13">Chat GPT</text>
+    <rect x="100" y="28" width="360" height="20" fill="#5BC0DE"/>
+    <text class="td-s" x="468" y="42" font-size="11">800 mln</text>
     <!-- Gemini 750 -->
-    <text class="td" x="66" y="58" text-anchor="end" font-size="3">Gemini</text>
-    <rect x="70" y="51" width="206" height="10" fill="url(#gradBar)" rx="1"/>
-    <text class="val" x="279" y="58" font-size="2.8">750 mln</text>
-    <!-- Copilot 150 (z briefu - choc nie w tabeli wykresu, dodam dla pelnosci) -->
-    <text class="td" x="66" y="74" text-anchor="end" font-size="3">Copilot</text>
-    <rect x="70" y="67" width="41" height="10" fill="url(#gradBar)" rx="1"/>
-    <text class="val" x="114" y="74" font-size="2.8">~150 mln</text>
+    <text class="td" x="95" y="62" text-anchor="end" font-size="13">Gemini</text>
+    <rect x="100" y="50" width="338" height="20" fill="#5BC0DE"/>
+    <text class="td-s" x="446" y="64" font-size="11">750 mln</text>
     <!-- DeepSeek 97 -->
-    <text class="td" x="66" y="90" text-anchor="end" font-size="3">DeepSeek</text>
-    <rect x="70" y="83" width="27" height="10" fill="url(#gradBar)" rx="1"/>
-    <text class="val" x="100" y="90" font-size="2.8">97 mln</text>
+    <text class="td" x="95" y="84" text-anchor="end" font-size="13">DeepSeek</text>
+    <rect x="100" y="72" width="44" height="20" fill="#5BC0DE"/>
+    <text class="td-s" x="152" y="86" font-size="11">97 mln</text>
     <!-- Grok 35 -->
-    <text class="td" x="66" y="106" text-anchor="end" font-size="3">Grok</text>
-    <rect x="70" y="99" width="10" height="10" fill="url(#gradBar)" rx="1"/>
-    <text class="val" x="83" y="106" font-size="2.8">35 mln</text>
+    <text class="td" x="95" y="106" text-anchor="end" font-size="13">Grok</text>
+    <rect x="100" y="94" width="16" height="20" fill="#5BC0DE"/>
+    <text class="td-s" x="124" y="108" font-size="11">35 mln</text>
+    <!-- Claude 19 -->
+    <text class="td" x="95" y="128" text-anchor="end" font-size="13">Claude</text>
+    <rect x="100" y="116" width="9" height="20" fill="#5BC0DE"/>
+    <text class="td-s" x="117" y="130" font-size="11">19 mln</text>
     <!-- Perplexity 22 -->
-    <text class="td" x="66" y="122" text-anchor="end" font-size="3">Perplexity</text>
-    <rect x="70" y="115" width="6" height="10" fill="url(#gradBar)" rx="1"/>
-    <text class="val" x="79" y="122" font-size="2.8">22 mln</text>
-    <!-- Claude 19 (pomaranczowy - akcent) -->
-    <text class="td" x="66" y="138" text-anchor="end" font-size="3" fill="#FF6B35">Claude</text>
-    <rect x="70" y="131" width="5" height="10" fill="#FF6B35" rx="1"/>
-    <text class="val" x="78" y="138" font-size="2.8">19 mln</text>
+    <text class="td" x="95" y="150" text-anchor="end" font-size="13">Perplexity</text>
+    <rect x="100" y="138" width="10" height="20" fill="#5BC0DE"/>
+    <text class="td-s" x="118" y="152" font-size="11">22 mln</text>
 
-    <!-- przypis -->
-    <text class="sub" x="10" y="158" font-size="2.3" fill="#7F8CA6">
-      * ChatGPT = WAU (tygodniowo), pozostale MAU (miesiecznie)
-    </text>
-  </g>
-
-  <!-- TABELA 2: AI w branzach -->
-  <g id="table2" transform="translate(665,105)">
-    <rect x="0" y="0" width="310" height="180" fill="#0E2D4F" rx="3"/>
-    <text class="h2-acc" x="10" y="14" font-size="6">AI W BRANZACH</text>
-    <text class="sub"    x="10" y="24" font-size="2.8">% firm uzywajacych AI</text>
-
-    <!-- naglowek -->
-    <rect x="6" y="30" width="298" height="12" fill="#0A2540" stroke="#00D4FF" stroke-width="0.3" rx="1.5"/>
-    <text class="th" x="12"  y="38.5" font-size="3">Branza</text>
-    <text class="th" x="115" y="38.5" font-size="3">% firm</text>
-    <text class="th" x="160" y="38.5" font-size="3">zastosowanie</text>
-
-    <g font-size="2.8">
-      <!-- Telekomunikacja 97% -->
-      <rect x="6" y="44" width="298" height="16" fill="#0F2D50"/>
-      <text class="td"     x="12"  y="55">Telekomunikacja</text>
-      <text class="val-acc" x="115" y="55" font-size="3.2">97%</text>
-      <text class="td-s"   x="160" y="55">optymalizacja sieci, BOK</text>
-      <!-- IT 90%+ -->
-      <rect x="6" y="60" width="298" height="16" fill="#0B2747"/>
-      <text class="td"     x="12"  y="71">Technologia / IT</text>
-      <text class="val-acc" x="115" y="71" font-size="3.2">90%+</text>
-      <text class="td-s"   x="160" y="71">kod, cyberbezp., automaty.</text>
-      <!-- Healthcare 70-85% -->
-      <rect x="6" y="76" width="298" height="16" fill="#0F2D50"/>
-      <text class="td"     x="12"  y="87">Healthcare</text>
-      <text class="val-acc" x="115" y="87" font-size="3.2">70-85%</text>
-      <text class="td-s"   x="160" y="87">diagnostyka, leki, dok.</text>
-      <!-- Produkcja 77% -->
-      <rect x="6" y="92" width="298" height="16" fill="#0B2747"/>
-      <text class="td"     x="12"  y="103">Produkcja / Manuf.</text>
-      <text class="val-acc" x="115" y="103" font-size="3.2">77%</text>
-      <text class="td-s"   x="160" y="103">kontrola jakosci, predykcja</text>
-      <!-- Marketing 65% -->
-      <rect x="6" y="108" width="298" height="16" fill="#0F2D50"/>
-      <text class="td"     x="12"  y="119">Marketing / Sprzedaz</text>
-      <text class="val-acc" x="115" y="119" font-size="3.2">65%</text>
-      <text class="td-s"   x="160" y="119">tresc, kampanie, segm.</text>
-      <!-- Finanse 63% -->
-      <rect x="6" y="124" width="298" height="16" fill="#0B2747"/>
-      <text class="td"     x="12"  y="135">Finanse / Banki</text>
-      <text class="val-acc" x="115" y="135" font-size="3.2">63%</text>
-      <text class="td-s"   x="160" y="135">oszustwa, ryzyko, doradzt.</text>
-      <!-- Profesjonalne 62% -->
-      <rect x="6" y="140" width="298" height="16" fill="#0F2D50"/>
-      <text class="td"     x="12"  y="151">Profesjonalne uslugi</text>
-      <text class="val-acc" x="115" y="151" font-size="3.2">62%</text>
-      <text class="td-s"   x="160" y="151">prawo, ksiegowosc</text>
-      <!-- Edukacja 40-50% -->
-      <rect x="6" y="156" width="298" height="16" fill="#0B2747"/>
-      <text class="td"     x="12"  y="167">Edukacja</text>
-      <text class="val-acc" x="115" y="167" font-size="3.2">40-50%</text>
-      <text class="td-s"   x="160" y="167">personalizacja, oceny</text>
+    <!-- Os pozioma + etykiety -->
+    <line x1="100" y1="166" x2="470" y2="166" stroke="#FFFFFF" stroke-width="0.6"/>
+    <g class="axis" font-size="11">
+      <text x="100" y="184" text-anchor="middle">0</text>
+      <text x="145" y="184" text-anchor="middle">100</text>
+      <text x="190" y="184" text-anchor="middle">200</text>
+      <text x="235" y="184" text-anchor="middle">300</text>
+      <text x="280" y="184" text-anchor="middle">400</text>
+      <text x="325" y="184" text-anchor="middle">500</text>
+      <text x="370" y="184" text-anchor="middle">600</text>
+      <text x="415" y="184" text-anchor="middle">700</text>
+      <text x="460" y="184" text-anchor="middle">800</text>
     </g>
   </g>
 
   <!-- ============================================================
-       3. OS CZASU 2020-2026 (y: 300 - 395)
+       TABELA 2 (prawa) – AI W BRANZACH (z briefu)
        ============================================================ -->
-  <g id="timeline" transform="translate(25,300)">
-    <rect x="0" y="0" width="950" height="95" fill="#0E2D4F" rx="3"/>
-    <text class="h2-acc" x="10" y="14" font-size="6">OS CZASU 2020 – 2026</text>
-    <text class="sub"    x="10" y="24" font-size="2.8">kluczowe momenty rewolucji AI</text>
+  <g id="tab2" transform="translate(1100,170)">
+    <!-- Naglowek -->
+    <rect x="0" y="0" width="460" height="36" fill="none" stroke="#FFFFFF" stroke-width="1.2"/>
+    <text class="th" x="14"  y="24" font-size="15">branza</text>
+    <text class="th" x="220" y="24" font-size="15">% firm</text>
+    <text class="th" x="290" y="24" font-size="15">co konkretnie</text>
 
-    <!-- BIG STAT przy 2025 -->
-    <g transform="translate(820,30)">
-      <text class="big" x="0" y="14" font-size="10" fill="#FF6B35">41%</text>
-      <text class="td-s" x="0" y="24" font-size="2.6" fill="#FFFFFF">calego kodu na swiecie</text>
-      <text class="td-s" x="0" y="32" font-size="2.6" fill="#9AA7BD">pisze obecnie AI (2025)</text>
+    <g font-size="13">
+      <rect x="0" y="36"  width="460" height="28" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="55">Telekomunikacja</text>
+      <text class="td"   x="220" y="55" fill="#E07A5F">97%</text>
+      <text class="td-s" x="290" y="55">optymalizacja sieci, BOK</text>
+
+      <rect x="0" y="64"  width="460" height="28" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="83">Technologia / IT</text>
+      <text class="td"   x="220" y="83" fill="#E07A5F">90%+</text>
+      <text class="td-s" x="290" y="83">kod, cyberbezp., automaty.</text>
+
+      <rect x="0" y="92"  width="460" height="28" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="111">Healthcare</text>
+      <text class="td"   x="220" y="111" fill="#E07A5F">70-85%</text>
+      <text class="td-s" x="290" y="111">diagnostyka, leki</text>
+
+      <rect x="0" y="120" width="460" height="28" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="139">Produkcja</text>
+      <text class="td"   x="220" y="139" fill="#E07A5F">77%</text>
+      <text class="td-s" x="290" y="139">kontrola jakosci, predykcja</text>
+
+      <rect x="0" y="148" width="460" height="28" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="167">Marketing / Sprzedaz</text>
+      <text class="td"   x="220" y="167" fill="#E07A5F">65%</text>
+      <text class="td-s" x="290" y="167">tresci, kampanie</text>
+
+      <rect x="0" y="176" width="460" height="28" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="195">Finanse / Banki</text>
+      <text class="td"   x="220" y="195" fill="#E07A5F">63%</text>
+      <text class="td-s" x="290" y="195">wykrywanie oszustw, ryzyko</text>
+
+      <rect x="0" y="204" width="460" height="28" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+      <text class="td"   x="14"  y="223">Edukacja</text>
+      <text class="td"   x="220" y="223" fill="#E07A5F">40-50%</text>
+      <text class="td-s" x="290" y="223">personalizacja, oceny</text>
     </g>
 
-    <!-- pozioma linia osi -->
-    <line x1="40" y1="65" x2="790" y2="65" stroke="#00D4FF" stroke-width="0.6"/>
-
-    <!-- 7 punktow -->
-    <g>
-      <!-- 2020 -->
-      <circle cx="60"  cy="65" r="2.2" fill="#FF6B35"/>
-      <text class="yr" x="60" y="80" text-anchor="middle" font-size="4">2020</text>
-      <text class="td" x="60" y="50" text-anchor="middle" font-size="2.8">GPT-3</text>
-      <text class="td-s" x="60" y="42" text-anchor="middle" font-size="2.5">AlphaFold 2</text>
-      <text class="sub" x="60" y="89" text-anchor="middle" font-size="2.3">pierwszy LLM</text>
-
-      <!-- 2021 -->
-      <circle cx="180" cy="65" r="2.2" fill="#FF6B35"/>
-      <text class="yr" x="180" y="80" text-anchor="middle" font-size="4">2021</text>
-      <text class="td" x="180" y="50" text-anchor="middle" font-size="2.8">Copilot</text>
-      <text class="td-s" x="180" y="42" text-anchor="middle" font-size="2.5">DALL-E</text>
-      <text class="sub" x="180" y="89" text-anchor="middle" font-size="2.3">AI dla programistow</text>
-
-      <!-- 2022 (kluczowy) -->
-      <circle cx="300" cy="65" r="3.5" fill="#00D4FF" stroke="#FFFFFF" stroke-width="0.4"/>
-      <text class="yr" x="300" y="80" text-anchor="middle" font-size="4" fill="#00D4FF">2022</text>
-      <text class="td" x="300" y="50" text-anchor="middle" font-size="3">ChatGPT</text>
-      <text class="td-s" x="300" y="42" text-anchor="middle" font-size="2.5">30.11 — launch</text>
-      <text class="sub" x="300" y="89" text-anchor="middle" font-size="2.3" fill="#00D4FF">100 mln/2 mies. – rekord!</text>
-
-      <!-- 2023 -->
-      <circle cx="420" cy="65" r="2.2" fill="#FF6B35"/>
-      <text class="yr" x="420" y="80" text-anchor="middle" font-size="4">2023</text>
-      <text class="td" x="420" y="50" text-anchor="middle" font-size="2.8">GPT-4</text>
-      <text class="td-s" x="420" y="42" text-anchor="middle" font-size="2.5">Claude, Gemini</text>
-      <text class="sub" x="420" y="89" text-anchor="middle" font-size="2.3">multimodalnosc</text>
-
-      <!-- 2024 -->
-      <circle cx="540" cy="65" r="2.2" fill="#FF6B35"/>
-      <text class="yr" x="540" y="80" text-anchor="middle" font-size="4">2024</text>
-      <text class="td" x="540" y="50" text-anchor="middle" font-size="2.8">Claude 3, GPT-4o</text>
-      <text class="td-s" x="540" y="42" text-anchor="middle" font-size="2.5">AI Act EU, Llama 3</text>
-      <text class="sub" x="540" y="89" text-anchor="middle" font-size="2.3">pierwsza regulacja AI</text>
-
-      <!-- 2025 -->
-      <circle cx="660" cy="65" r="2.2" fill="#FF6B35"/>
-      <text class="yr" x="660" y="80" text-anchor="middle" font-size="4">2025</text>
-      <text class="td" x="660" y="50" text-anchor="middle" font-size="2.8">GPT-5, Claude 4</text>
-      <text class="td-s" x="660" y="42" text-anchor="middle" font-size="2.5">DeepSeek R1, agenci</text>
-      <text class="sub" x="660" y="89" text-anchor="middle" font-size="2.3">modele rozumowania</text>
-
-      <!-- 2026 (koncowy) -->
-      <circle cx="780" cy="65" r="3.5" fill="#FF6B35" stroke="#FFFFFF" stroke-width="0.4"/>
-      <text class="yr" x="780" y="80" text-anchor="middle" font-size="4" fill="#FF6B35">2026</text>
-      <text class="td" x="780" y="50" text-anchor="middle" font-size="3">Claude Opus 4.7</text>
-      <text class="td-s" x="780" y="42" text-anchor="middle" font-size="2.5">900 mld USD rynek</text>
-      <text class="sub" x="780" y="89" text-anchor="middle" font-size="2.3" fill="#FF6B35">AI = nowy prad</text>
+    <!-- Linie pionowe -->
+    <g stroke="#FFFFFF" stroke-width="0.8">
+      <line x1="210" y1="0" x2="210" y2="232"/>
+      <line x1="280" y1="0" x2="280" y2="232"/>
     </g>
   </g>
 
   <!-- ============================================================
-       4. ROW 3 – Wykres 2 + Big Stats + CTA/Zrodla (y: 405 - 575)
+       WYKRES SLUPKOWY – RYNEK AI 2020-2030
        ============================================================ -->
+  <g id="market" transform="translate(60,500)">
+    <text class="h2" x="0" y="0" font-size="22" font-style="italic">Eksplozja rynku AI – wartosc globalna w mld USD</text>
 
-  <!-- WYKRES 2: RYNEK AI 2020-2030 -->
-  <g id="chart2" transform="translate(25,405)">
-    <rect x="0" y="0" width="560" height="170" fill="#0E2D4F" rx="3"/>
-    <text class="h2-acc" x="10" y="14" font-size="6">EKSPLOZJA RYNKU AI</text>
-    <text class="sub"    x="10" y="24" font-size="2.8">wartosc globalna w mld USD • 2020 — 2030 (prognoza)</text>
+    <!-- Os Y -->
+    <g class="axis" font-size="12">
+      <text x="50" y="40"  text-anchor="end">2500</text>
+      <text x="50" y="120" text-anchor="end">2000</text>
+      <text x="50" y="200" text-anchor="end">1500</text>
+      <text x="50" y="280" text-anchor="end">1000</text>
+      <text x="50" y="360" text-anchor="end">500</text>
+      <text x="50" y="420" text-anchor="end">0</text>
+    </g>
 
-    <!-- siatka pomocnicza -->
-    <g stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="0.25" stroke-dasharray="1,1.5">
-      <line x1="40" y1="50"  x2="540" y2="50"/>
-      <line x1="40" y1="80"  x2="540" y2="80"/>
-      <line x1="40" y1="110" x2="540" y2="110"/>
-    </g>
-    <!-- os Y -->
-    <g class="axis" font-size="2.5">
-      <text x="36" y="52" text-anchor="end">2500</text>
-      <text x="36" y="82" text-anchor="end">1500</text>
-      <text x="36" y="112" text-anchor="end">500</text>
-      <text x="36" y="140" text-anchor="end">0</text>
-    </g>
-    <!-- linia bazowa -->
-    <line x1="40" y1="140" x2="540" y2="140" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="0.4"/>
+    <!-- Linia bazowa -->
+    <line x1="60" y1="420" x2="1480" y2="420" stroke="#FFFFFF" stroke-width="0.8"/>
 
-    <!-- Wartosci: 62, 94, 142, 189, 224, 757, 900, 2480
-         Skala: 1 mld = 0.036 mm. baselina y=140. Wys = mld * 0.036 -->
-    <!-- 2020 -> 62 -> 2.2 -->
-    <g transform="translate(60,0)">
-      <rect x="0" y="137.8" width="40" height="2.2" fill="url(#gradMarket)" rx="0.8"/>
-      <text class="val" x="20" y="134" text-anchor="middle" font-size="2.5">62</text>
-      <text class="yr"  x="20" y="152" text-anchor="middle" font-size="3">2020</text>
-      <text class="sub" x="20" y="160" text-anchor="middle" font-size="2.3">GPT-3</text>
+    <!-- Sloupki: 1 mld = 0.16 px (2500 = 400 px wys.); baselina y=420 -->
+    <!-- 2020 - GPT-3 - 50 -->
+    <g transform="translate(120,0)">
+      <rect x="0" y="412" width="120" height="8"  fill="url(#gradGrowth)"/>
+      <text class="lbl" x="60" y="402" text-anchor="middle" font-size="13">GPT-3</text>
+      <text class="yr"  x="60" y="448" text-anchor="middle" font-size="18">2020</text>
     </g>
-    <!-- 2021 -> 94 -> 3.4 -->
-    <g transform="translate(115,0)">
-      <rect x="0" y="136.6" width="40" height="3.4" fill="url(#gradMarket)" rx="0.8"/>
-      <text class="val" x="20" y="133" text-anchor="middle" font-size="2.5">94</text>
-      <text class="yr"  x="20" y="152" text-anchor="middle" font-size="3">2021</text>
-      <text class="sub" x="20" y="160" text-anchor="middle" font-size="2.3">DALL-E, Copilot</text>
-    </g>
-    <!-- 2022 -> 142 -> 5.1 -->
-    <g transform="translate(170,0)">
-      <rect x="0" y="134.9" width="40" height="5.1" fill="url(#gradMarket)" rx="0.8"/>
-      <text class="val" x="20" y="131" text-anchor="middle" font-size="2.5">142</text>
-      <text class="yr"  x="20" y="152" text-anchor="middle" font-size="3">2022</text>
-      <text class="sub" x="20" y="160" text-anchor="middle" font-size="2.3">ChatGPT launch</text>
-    </g>
-    <!-- 2023 -> 189 -> 6.8 -->
-    <g transform="translate(225,0)">
-      <rect x="0" y="133.2" width="40" height="6.8" fill="url(#gradMarket)" rx="0.8"/>
-      <text class="val" x="20" y="129" text-anchor="middle" font-size="2.5">189</text>
-      <text class="yr"  x="20" y="152" text-anchor="middle" font-size="3">2023</text>
-      <text class="sub" x="20" y="160" text-anchor="middle" font-size="2.3">GPT-4, Claude</text>
-    </g>
-    <!-- 2024 -> 224 -> 8.1 -->
+    <!-- 2021 - Copilot - 90 -->
     <g transform="translate(280,0)">
-      <rect x="0" y="131.9" width="40" height="8.1" fill="url(#gradMarket)" rx="0.8"/>
-      <text class="val" x="20" y="128" text-anchor="middle" font-size="2.5">224</text>
-      <text class="yr"  x="20" y="152" text-anchor="middle" font-size="3">2024</text>
-      <text class="sub" x="20" y="160" text-anchor="middle" font-size="2.3">GPT-4o, Gemini</text>
+      <rect x="0" y="406" width="120" height="14" fill="url(#gradGrowth)"/>
+      <text class="lbl" x="60" y="396" text-anchor="middle" font-size="13">Copilot</text>
+      <text class="yr"  x="60" y="448" text-anchor="middle" font-size="18">2021</text>
     </g>
-    <!-- 2025 -> 757 -> 27.3 -->
-    <g transform="translate(335,0)">
-      <rect x="0" y="112.7" width="40" height="27.3" fill="url(#gradMarket)" rx="0.8"/>
-      <text class="val" x="20" y="109" text-anchor="middle" font-size="2.5">757</text>
-      <text class="yr"  x="20" y="152" text-anchor="middle" font-size="3">2025</text>
-      <text class="sub" x="20" y="160" text-anchor="middle" font-size="2.3">GPT-5, agenci</text>
+    <!-- 2022 - ChatGPT - 142 -->
+    <g transform="translate(440,0)">
+      <rect x="0" y="397" width="120" height="23" fill="url(#gradGrowth)"/>
+      <text class="lbl" x="60" y="387" text-anchor="middle" font-size="13">ChatGPT</text>
+      <text class="yr"  x="60" y="448" text-anchor="middle" font-size="18">2022</text>
     </g>
-    <!-- 2026 -> 900 -> 32.4 -->
-    <g transform="translate(390,0)">
-      <rect x="0" y="107.6" width="40" height="32.4" fill="url(#gradMarket)" rx="0.8"/>
-      <text class="val" x="20" y="104" text-anchor="middle" font-size="2.5">900</text>
-      <text class="yr"  x="20" y="152" text-anchor="middle" font-size="3">2026</text>
-      <text class="sub" x="20" y="160" text-anchor="middle" font-size="2.3">teraz</text>
+    <!-- 2023 - GPT-4 / Claude - 189 -->
+    <g transform="translate(600,0)">
+      <rect x="0" y="390" width="120" height="30" fill="url(#gradGrowth)"/>
+      <text class="lbl" x="60" y="378" text-anchor="middle" font-size="13">GPT-4</text>
+      <text class="lbl" x="60" y="367" text-anchor="middle" font-size="13">Claude</text>
+      <text class="yr"  x="60" y="448" text-anchor="middle" font-size="18">2023</text>
     </g>
-    <!-- 2030 -> 2480 (prognoza) -> 89.3 -->
-    <g transform="translate(465,0)">
-      <rect x="0" y="50.7" width="50" height="89.3" fill="url(#gradForecast)" rx="0.8"/>
-      <text class="val" x="25" y="47" text-anchor="middle" font-size="2.8" fill="#FFB454">2 480</text>
-      <text class="sub" x="25" y="39" text-anchor="middle" font-size="2.3" fill="#FFB454">prognoza</text>
-      <text class="yr"  x="25" y="152" text-anchor="middle" font-size="3">2030</text>
-      <text class="sub" x="25" y="160" text-anchor="middle" font-size="2.3">prognoza dlugotermin.</text>
+    <!-- 2024 - Claude 4 - 224 -->
+    <g transform="translate(760,0)">
+      <rect x="0" y="384" width="120" height="36" fill="url(#gradGrowth)"/>
+      <text class="lbl" x="60" y="374" text-anchor="middle" font-size="13">Claude 3</text>
+      <text class="yr"  x="60" y="448" text-anchor="middle" font-size="18">2024</text>
     </g>
-
-    <!-- strzalka trendu -->
-    <path d="M 80,138 Q 280,134 380,108 T 510,55"
-          stroke="#FF6B35" stroke-width="0.6" fill="none"
-          stroke-dasharray="2,1.5" opacity="0.55"/>
-  </g>
-
-  <!-- BIG STATS + IKONY -->
-  <g id="bigstats" transform="translate(595,405)">
-    <rect x="0" y="0" width="200" height="170" fill="#0E2D4F" rx="3"/>
-    <text class="h2-acc" x="10" y="14" font-size="6">W LICZBACH</text>
-    <text class="sub"    x="10" y="24" font-size="2.8">kluczowe statystyki rewolucji AI</text>
-
-    <!-- BIG STAT: x25 -->
-    <g transform="translate(15,40)">
-      <text class="big" x="0" y="25" font-size="20" fill="#FF6B35">×25</text>
-      <text class="td"   x="0" y="40" font-size="2.8" fill="#FFFFFF">wzrost wartosci rynku AI</text>
-      <text class="td-s" x="0" y="48" font-size="2.5" fill="#9AA7BD">2020 — 2030 (62 → 2 480 mld USD)</text>
+    <!-- 2025 - Claude 4 / GPT-5 - 550 -->
+    <g transform="translate(920,0)">
+      <rect x="0" y="332" width="120" height="88" fill="url(#gradGrowth)"/>
+      <text class="lbl" x="60" y="322" text-anchor="middle" font-size="13">Claude 4</text>
+      <text class="lbl" x="60" y="311" text-anchor="middle" font-size="13">GPT-5</text>
+      <text class="yr"  x="60" y="448" text-anchor="middle" font-size="18">2025</text>
     </g>
-
-    <!-- separator -->
-    <line x1="10" y1="95" x2="190" y2="95" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="0.3"/>
-
-    <!-- BIG STAT: 800 mln / tydz -->
-    <g transform="translate(15,100)">
-      <text class="big" x="0" y="22" font-size="15" fill="#00D4FF">800 mln</text>
-      <text class="td"   x="0" y="34" font-size="2.8" fill="#FFFFFF">tygodniowo aktywnych uzytkownikow ChatGPT</text>
-      <text class="td-s" x="0" y="42" font-size="2.5" fill="#9AA7BD">najszybciej rosnaca aplikacja w historii</text>
+    <!-- 2026 - Claude 4.7 / GPT-5.5 - 900 -->
+    <g transform="translate(1080,0)">
+      <rect x="0" y="276" width="120" height="144" fill="url(#gradGrowth)"/>
+      <text class="lbl" x="60" y="266" text-anchor="middle" font-size="13">Claude 4.7</text>
+      <text class="lbl" x="60" y="255" text-anchor="middle" font-size="13">GPT-5.5</text>
+      <text class="yr"  x="60" y="448" text-anchor="middle" font-size="18">2026</text>
     </g>
-
-    <!-- separator -->
-    <line x1="10" y1="148" x2="190" y2="148" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="0.3"/>
-
-    <!-- ikony firm (proste znaczniki tekstowe, do podmiany na SVG logo) -->
-    <g transform="translate(15,155)" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="2.5">
-      <rect x="0"   y="0" width="25" height="10" fill="#00D4FF" rx="1.5"/>
-      <text x="12.5" y="7" text-anchor="middle" fill="#0A2540">OpenAI</text>
-      <rect x="28"  y="0" width="25" height="10" fill="#FF6B35" rx="1.5"/>
-      <text x="40.5" y="7" text-anchor="middle" fill="#FFFFFF">Anthropic</text>
-      <rect x="56"  y="0" width="25" height="10" fill="#4285F4" rx="1.5"/>
-      <text x="68.5" y="7" text-anchor="middle" fill="#FFFFFF">Google</text>
-      <rect x="84"  y="0" width="25" height="10" fill="#00A4EF" rx="1.5"/>
-      <text x="96.5" y="7" text-anchor="middle" fill="#FFFFFF">Microsoft</text>
-      <rect x="112" y="0" width="25" height="10" fill="#1F2937" rx="1.5" stroke="#FFFFFF" stroke-width="0.2"/>
-      <text x="124.5" y="7" text-anchor="middle" fill="#FFFFFF">DeepSeek</text>
-      <rect x="140" y="0" width="20" height="10" fill="#FFFFFF" rx="1.5"/>
-      <text x="150" y="7" text-anchor="middle" fill="#0A2540">xAI</text>
-      <rect x="163" y="0" width="22" height="10" fill="#20808D" rx="1.5"/>
-      <text x="174" y="7" text-anchor="middle" fill="#FFFFFF">Perplexity</text>
+    <!-- 2030 - prognoza - 2100 -->
+    <g transform="translate(1280,0)">
+      <rect x="0" y="84" width="140" height="336" fill="url(#gradGrowth)"/>
+      <text class="lbl" x="70" y="74" text-anchor="middle" font-size="13" font-style="italic">prognoza</text>
+      <text class="yr"  x="70" y="448" text-anchor="middle" font-size="18">2030</text>
     </g>
   </g>
 
-  <!-- CTA / ZRODLA -->
-  <g id="cta" transform="translate(805,405)">
-    <rect x="0" y="0" width="170" height="170" fill="#0E2D4F" rx="3"/>
-    <text class="h2-acc" x="10" y="14" font-size="6">CO DALEJ?</text>
-    <text class="sub"    x="10" y="24" font-size="2.8">jak nadazyc za AI</text>
-
-    <!-- 3 wskazowki -->
-    <g transform="translate(10,35)">
-      <circle cx="3" cy="3" r="2" fill="#00D4FF"/>
-      <text class="td" x="10" y="5" font-size="2.8">Testuj rozne modele</text>
-      <text class="td-s" x="10" y="13" font-size="2.5">ChatGPT, Claude, Gemini – kazdy jest dobry w czym innym</text>
-    </g>
-    <g transform="translate(10,60)">
-      <circle cx="3" cy="3" r="2" fill="#00D4FF"/>
-      <text class="td" x="10" y="5" font-size="2.8">Naucz sie pisac promptow</text>
-      <text class="td-s" x="10" y="13" font-size="2.5">dobry prompt = 10× lepszy wynik z tego samego modelu</text>
-    </g>
-    <g transform="translate(10,85)">
-      <circle cx="3" cy="3" r="2" fill="#00D4FF"/>
-      <text class="td" x="10" y="5" font-size="2.8">Sledz nowosci tygodniowo</text>
-      <text class="td-s" x="10" y="13" font-size="2.5">branza zmienia sie szybciej niz kazda inna w historii</text>
-    </g>
-
-    <!-- citation block -->
-    <rect x="6" y="110" width="158" height="54" fill="#0A2540" rx="1.5"/>
-    <text class="th" x="12" y="120" font-size="2.8">ZRODLA</text>
-    <text class="src" x="12" y="128" font-size="2.1">Statista (2025-26), Precedence Research,</text>
-    <text class="src" x="12" y="133" font-size="2.1">Grand View Research, Fortune Business Insights,</text>
-    <text class="src" x="12" y="138" font-size="2.1">McKinsey State of AI 2025, Menlo Ventures 2025,</text>
-    <text class="src" x="12" y="143" font-size="2.1">Sensor Tower, Similarweb, Stack Overflow Survey 2025,</text>
-    <text class="src" x="12" y="148" font-size="2.1">UNCTAD Tech Report 2025, Anthropic Economic Index,</text>
-    <text class="src" x="12" y="153" font-size="2.1">OpenAI Reports 2025-26, Google I/O 2025.</text>
-    <text class="src" x="12" y="160" font-size="2.1" fill="#FF6B35">Stan: maj 2026</text>
-  </g>
-
-  <!-- ============================================================
-       5. STOPKA (y: 585 - 600)
-       ============================================================ -->
-  <g id="footer">
-    <line x1="25" y1="582" x2="975" y2="582" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="0.3"/>
-    <text class="src" x="25"  y="592" font-size="2.3">AI W LICZBACH · plakat edukacyjny · format 100 × 60 cm</text>
-    <text class="src" x="500" y="592" font-size="2.3" text-anchor="middle">opracowanie wlasne na podstawie raportow branzowych 2025–2026</text>
-    <text class="src" x="975" y="592" font-size="2.3" text-anchor="end">Eryk · maj 2026</text>
-  </g>
-
-  <!-- Linie marginesowe (do usuniecia przed drukiem - tylko podglad) -->
-  <!--
-  <rect x="0" y="0" width="1000" height="600" fill="none" stroke="#FF00FF" stroke-width="0.2" stroke-dasharray="2,2"/>
-  <rect x="25" y="25" width="950" height="550" fill="none" stroke="#00FF00" stroke-width="0.2" stroke-dasharray="2,2"/>
-  -->
+  <!-- Drobny przypis na dole -->
+  <text class="axis" x="800" y="975" font-size="11" text-anchor="middle" font-style="italic">
+    zrodla: Statista, Precedence Research, McKinsey State of AI 2025, OpenAI, Anthropic, Google • opracowanie wlasne
+  </text>
 
 </svg>
