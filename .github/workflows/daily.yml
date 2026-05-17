@@ -37,7 +37,7 @@ jobs:
       # Apify (opcjonalne - jak ustawione, social.py uzyje Apify zamiast yt-dlp+cookies)
       APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
       SCRIPTS_PER_DAY: "3"
-      CHANNEL_MIN_VIEWS: ${{ vars.CHANNEL_MIN_VIEWS || '500000' }}
+      CHANNEL_MIN_VIEWS: ${{ vars.CHANNEL_MIN_VIEWS || '100000' }}
       PYTHONUNBUFFERED: "1"
 
     steps:
