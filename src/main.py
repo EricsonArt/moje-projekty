@@ -32,6 +32,11 @@ from src.generate.pipeline import (
     pick_topic_for_today,
 )
 from src.llm.router import LLMRouter
+from src.scrape.apify import (
+    apify_available,
+    apify_instagram_videos,
+    apify_tiktok_videos,
+)
 from src.scrape.social import (
     cookies_status,
     expand_instagram_channel,
@@ -200,25 +205,28 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
         len(ig_channels), len(ig_videos),
     )
 
-    # 1a. Cookies status (TT/IG wymagaja cookies, ostrzezenie jak nie ma)
+    # 1a. Tryb scraping TT/IG: APIFY ma priorytet, fallback = yt-dlp+cookies
+    use_apify = apify_available()
     cookies = await cookies_status()
-    if tt_channels or tt_videos:
-        if not cookies["tiktok"]:
+    if use_apify:
+        log.info("APIFY_TOKEN ustawione - TT/IG przez Apify (chmurowy tryb).")
+    else:
+        if (tt_channels or tt_videos) and not cookies["tiktok"]:
             log.warning(
-                "TikTok links in swipe-file ale brak data/cookies/tiktok.txt - "
-                "TT bedzie pominiety. Patrz docs/SETUP-WINDOWS.md.",
+                "TT linki w swipe-file ale brak cookies i brak APIFY_TOKEN - TT pominiety."
             )
-    if ig_channels or ig_videos:
-        if not cookies["instagram"]:
+        if (ig_channels or ig_videos) and not cookies["instagram"]:
             log.warning(
-                "Instagram links in swipe-file ale brak data/cookies/instagram.txt - "
-                "IG bedzie pominiety. Patrz docs/SETUP-WINDOWS.md.",
+                "IG linki w swipe-file ale brak cookies i brak APIFY_TOKEN - IG pominiety."
             )
 
     # 1b. Expand channels per platform
     yt_urls: list[str] = [l.url for l in yt_videos]
     tt_urls: list[str] = [l.url for l in tt_videos]
     ig_urls: list[str] = [l.url for l in ig_videos]
+    # Apify zwraca od razu YoutubeVideo - omijamy fetch_social
+    apify_tt_sources: list[tuple[YoutubeVideo, str]] = []
+    apify_ig_sources: list[tuple[YoutubeVideo, str]] = []
 
     if yt_channels:
         yt_expansions = await asyncio.gather(*(
@@ -235,33 +243,69 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
                 log.warning("YT channel %s yielded 0 viral shorts", ch.url)
             yt_urls.extend(urls)
 
-    if tt_channels and cookies["tiktok"]:
-        tt_expansions = await asyncio.gather(*(
-            expand_tiktok_channel(
-                ch.url,
-                max_per_channel=settings.channel_max_shorts_per_channel,
-                scan_depth=settings.channel_scan_depth,
-            )
-            for ch in tt_channels
-        ))
-        for ch, urls in zip(tt_channels, tt_expansions):
-            if not urls:
-                log.warning("TT channel %s yielded 0 videos", ch.url)
-            tt_urls.extend(urls)
+    # TikTok: Apify > cookies > skip
+    if tt_channels:
+        if use_apify:
+            try:
+                tt_results = await asyncio.gather(*(
+                    apify_tiktok_videos(ch.url, max_videos=settings.channel_max_shorts_per_channel)
+                    for ch in tt_channels
+                ), return_exceptions=True)
+                for ch, vids in zip(tt_channels, tt_results):
+                    if isinstance(vids, Exception):
+                        log.error("Apify TT %s failed: %s", ch.url, vids)
+                        continue
+                    for v in vids:
+                        text = f"Tytul: {v.title}\nOpis: {v.description}".strip()
+                        if len(text) >= MIN_TRANSCRIPT_CHARS:
+                            apify_tt_sources.append((v, text))
+            except Exception as e:
+                log.error("Apify TT global error: %s", e)
+        elif cookies["tiktok"]:
+            tt_expansions = await asyncio.gather(*(
+                expand_tiktok_channel(
+                    ch.url,
+                    max_per_channel=settings.channel_max_shorts_per_channel,
+                    scan_depth=settings.channel_scan_depth,
+                )
+                for ch in tt_channels
+            ))
+            for ch, urls in zip(tt_channels, tt_expansions):
+                if not urls:
+                    log.warning("TT channel %s yielded 0 videos", ch.url)
+                tt_urls.extend(urls)
 
-    if ig_channels and cookies["instagram"]:
-        ig_expansions = await asyncio.gather(*(
-            expand_instagram_channel(
-                ch.url,
-                max_per_channel=settings.channel_max_shorts_per_channel,
-                scan_depth=settings.channel_scan_depth,
-            )
-            for ch in ig_channels
-        ))
-        for ch, urls in zip(ig_channels, ig_expansions):
-            if not urls:
-                log.warning("IG channel %s yielded 0 videos", ch.url)
-            ig_urls.extend(urls)
+    # Instagram: Apify > cookies > skip
+    if ig_channels:
+        if use_apify:
+            try:
+                ig_results = await asyncio.gather(*(
+                    apify_instagram_videos(ch.url, max_videos=settings.channel_max_shorts_per_channel)
+                    for ch in ig_channels
+                ), return_exceptions=True)
+                for ch, vids in zip(ig_channels, ig_results):
+                    if isinstance(vids, Exception):
+                        log.error("Apify IG %s failed: %s", ch.url, vids)
+                        continue
+                    for v in vids:
+                        text = f"Tytul: {v.title}\nOpis: {v.description}".strip()
+                        if len(text) >= MIN_TRANSCRIPT_CHARS:
+                            apify_ig_sources.append((v, text))
+            except Exception as e:
+                log.error("Apify IG global error: %s", e)
+        elif cookies["instagram"]:
+            ig_expansions = await asyncio.gather(*(
+                expand_instagram_channel(
+                    ch.url,
+                    max_per_channel=settings.channel_max_shorts_per_channel,
+                    scan_depth=settings.channel_scan_depth,
+                )
+                for ch in ig_channels
+            ))
+            for ch, urls in zip(ig_channels, ig_expansions):
+                if not urls:
+                    log.warning("IG channel %s yielded 0 videos", ch.url)
+                ig_urls.extend(urls)
 
     # Dedup per platform
     def _dedup(urls: list[str]) -> list[str]:
@@ -276,11 +320,16 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
     yt_urls = _dedup(yt_urls)
     tt_urls = _dedup(tt_urls)
     ig_urls = _dedup(ig_urls)
-    log.info("Po dedup: YT=%d, TT=%d, IG=%d", len(yt_urls), len(tt_urls), len(ig_urls))
+    log.info(
+        "Po dedup: YT=%d, TT(cookies)=%d, IG(cookies)=%d, TT(apify)=%d, IG(apify)=%d",
+        len(yt_urls), len(tt_urls), len(ig_urls),
+        len(apify_tt_sources), len(apify_ig_sources),
+    )
 
-    if not (yt_urls or tt_urls or ig_urls):
+    have_any = bool(yt_urls or tt_urls or ig_urls or apify_tt_sources or apify_ig_sources)
+    if not have_any:
         log.error(
-            "No videos collected. Sprawdz kanaly w %s, cookies, lub CHANNEL_MIN_VIEWS (now=%d).",
+            "No videos collected. Sprawdz kanaly w %s, cookies, APIFY_TOKEN, lub CHANNEL_MIN_VIEWS (now=%d).",
             swipe_file, settings.channel_min_views,
         )
         return []
@@ -289,7 +338,7 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
     yt_sources_task = _fetch_and_transcribe_youtube(yt_urls) if yt_urls else _empty_sources()
     social_sources_task = _fetch_social(tt_urls, ig_urls) if (tt_urls or ig_urls) else _empty_sources()
     yt_sources, social_sources = await asyncio.gather(yt_sources_task, social_sources_task)
-    sources = yt_sources + social_sources
+    sources = yt_sources + social_sources + apify_tt_sources + apify_ig_sources
     log.info("Usable sources after transcription: %d", len(sources))
     if not sources:
         log.error("No source videos with usable transcripts - aborting")

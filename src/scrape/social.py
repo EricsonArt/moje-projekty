@@ -15,6 +15,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import random
 import shutil
 from dataclasses import dataclass
@@ -28,6 +29,35 @@ log = logging.getLogger(__name__)
 COOKIES_DIR = DATA_DIR / "cookies"
 TIKTOK_COOKIES = COOKIES_DIR / "tiktok.txt"
 INSTAGRAM_COOKIES = COOKIES_DIR / "instagram.txt"
+
+# Env vars dla trybu chmurowego (GitHub Actions): cookies wkleja sie jako secret,
+# workflow exportuje je tutaj, ten modul zapisuje do plikow przed wywolaniem yt-dlp.
+ENV_TIKTOK_COOKIES = "TIKTOK_COOKIES_CONTENT"
+ENV_INSTAGRAM_COOKIES = "INSTAGRAM_COOKIES_CONTENT"
+
+
+def _materialize_cookies_from_env() -> None:
+    """Jezeli cookies sa w env vars (chmurowy tryb), zapisz do plikow.
+    Wywolywane raz przy starcie, zanim cokolwiek probuje uzyc plikow."""
+    COOKIES_DIR.mkdir(parents=True, exist_ok=True)
+
+    for env_name, target in [
+        (ENV_TIKTOK_COOKIES, TIKTOK_COOKIES),
+        (ENV_INSTAGRAM_COOKIES, INSTAGRAM_COOKIES),
+    ]:
+        content = os.environ.get(env_name, "").strip()
+        if not content:
+            continue
+        if target.exists() and target.stat().st_size > 0:
+            # Plik juz istnieje (tryb lokalny) - nie nadpisuj
+            continue
+        target.write_text(content, encoding="utf-8")
+        log.info("Cookies zapisane z env var %s -> %s (%d bajtow)",
+                 env_name, target.name, len(content))
+
+
+# Auto-run przy imporcie - zeby kazdy entry point pipeline'u mial cookies gotowe
+_materialize_cookies_from_env()
 
 
 @dataclass

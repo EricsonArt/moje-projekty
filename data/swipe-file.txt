@@ -1,57 +1,44 @@
 # Swipe file - linki do KANALOW (lub pojedynczych filmow) ze short formem.
 #
 # JAK TO DZIALA:
-# 1. Z kazdego kanalu pipeline wyciaga top shorty (YT) lub najnowsze (TT/IG).
-# 2. Dla YT: filtr po wyswietleniach (default >= 500 000, zmienialny w .env).
-# 3. Dla TT/IG: bierze N najnowszych (TT/IG nie udostepnia view_count w listach).
+# 1. Z kazdego kanalu pipeline wyciaga top shorty.
+# 2. Dla YT: filtr po wyswietleniach (default >= 500 000).
+# 3. Dla TT/IG: bierze N najnowszych (TT/IG nie eksponuje view_count w listach).
 # 4. Z calej puli losuje 3 codziennie i generuje 3 nowe skrypty.
 # 5. Wysyla na Telegram.
 #
-# WAZNE: TT i IG wymagaja COOKIES w data/cookies/ - patrz docs/SETUP-WINDOWS.md
+# === TRYBY DZIALANIA TT/IG (wybierz JEDEN) ===
 #
-# WSPIERANE FORMATY:
+# A) APIFY (chmurowy, free $5/mc credit, REKOMENDOWANY dla TT/IG):
+#    -> Dodaj APIFY_TOKEN jako GitHub Secret -> dziala z chmury bez Twojego PC
 #
-# YouTube (kanaly):
-#   https://www.youtube.com/@nazwa
-#   https://www.youtube.com/@nazwa/shorts
-#   https://www.youtube.com/channel/UCxxxxxxxxx
+# B) COOKIES W SECRETS (chmurowy, 100% darmowy, refresh cookies raz na 1-2 tyg):
+#    -> Wyeksportuj cookies z przegladarki -> wklej zawartosc jako TIKTOK_COOKIES
+#       i INSTAGRAM_COOKIES w GitHub Secrets -> dziala z chmury
 #
-# YouTube (pojedyncze shorty - bez filtra views):
-#   https://youtube.com/shorts/XYZ
+# C) COOKIES LOKALNIE (Twoj PC, 100% darmowy):
+#    -> patrz docs/SETUP-WINDOWS.md i START.bat
 #
-# TikTok (profile):
-#   https://www.tiktok.com/@nazwa
-#
-# TikTok (pojedyncze filmy):
-#   https://www.tiktok.com/@nazwa/video/1234567890
-#
-# Instagram (profile):
-#   https://www.instagram.com/nazwa
-#   https://www.instagram.com/nazwa/
-#
-# Instagram (pojedyncze rolki):
-#   https://www.instagram.com/reel/ABC123/
-#
-# REKOMENDACJA:
-# - 3-10 kanalow z Twojej niszy mix YT/TT/IG (np. 3 YT + 3 TT + 3 IG)
-# - Wymieniaj co 2-3 tygodnie zeby system nie wpadl w 1 styl
-# - Zaloz drugie konto TT/IG do podpiecia (cookies) - ochrona glownego konta
+# === Twoje kanaly ===
 
-# === Twoje kanaly (podmien placeholdery) ===
+# TikTok (Eryk - twoje wybory):
+https://www.tiktok.com/@danvmartell
+https://www.tiktok.com/@soprano_marketing
+https://www.tiktok.com/@www.dawidpiatkowski.com
+https://www.tiktok.com/@personalbrandlaunch0
+https://www.tiktok.com/@jun_yuh
+https://www.tiktok.com/@mino.mp4
 
-# YouTube:
-# https://www.youtube.com/@PRZYKLAD_YT_1
-# https://www.youtube.com/@PRZYKLAD_YT_2
-
-# TikTok (wymaga data/cookies/tiktok.txt):
-# https://www.tiktok.com/@PRZYKLAD_TT_1
-# https://www.tiktok.com/@PRZYKLAD_TT_2
-
-# Instagram (wymaga data/cookies/instagram.txt):
+# Instagram - dodaj swoje gdy bedziesz wiedzial ze IG dziala:
 # https://www.instagram.com/PRZYKLAD_IG_1
-# https://www.instagram.com/PRZYKLAD_IG_2
+
+# YouTube fallback - usun ten blok jak nie chcesz YT:
+# (Bezpieczne kanaly polskie z viralowymi shortami - generuje skrypty nawet jak TT/IG nie wypali)
+https://www.youtube.com/@MateuszGrzesiak
+https://www.youtube.com/@KasiaGandor
+https://www.youtube.com/@pawelopydo
 
 # === Notatki ===
-# - Min 3 zrodla na start.
-# - Jezeli pipeline mowi "no usable transcripts" dla YT -> zmien kanal na taki ktory robi PL napisy.
-# - Jezeli pipeline mowi "zero shorts >= 500000 views" -> obniz CHANNEL_MIN_VIEWS w .env.
+# - Jak TT nie zwraca filmow ("Cookies expired" / "Login required") - patrz tryb A lub B powyzej
+# - Jak YT mowi "zero shorts >= 500000 views" - obniz w GitHub Repository Variables: CHANNEL_MIN_VIEWS=100000
+# - Wymieniaj kanaly co 2-3 tygodnie zeby system nie wpadl w 1 styl

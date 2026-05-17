@@ -3,10 +3,9 @@ name: Daily viral scripts
 on:
   schedule:
     # 05:00 UTC = 06:00 PL zima / 07:00 PL lato. Skrypty czekaja zanim wstaniesz.
-    # UWAGA: cron dziala TYLKO na default branch (main). Z innych branchy
-    # tylko workflow_dispatch (recznie z UI).
+    # UWAGA: cron dziala TYLKO na default branch (main).
     - cron: "0 5 * * *"
-  workflow_dispatch:  # ręczny trigger z GitHub UI
+  workflow_dispatch:
     inputs:
       skip_telegram:
         description: "Pomin wyslanie na Telegram (tylko zapis do repo)"
@@ -15,7 +14,7 @@ on:
         default: false
 
 permissions:
-  contents: write  # potrzebne do commit scripts/
+  contents: write
 
 concurrency:
   group: daily-${{ github.ref }}
@@ -32,6 +31,11 @@ jobs:
       YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # Cookies dla TT/IG (opcjonalne - jak nie ma, TT/IG zostaja pominiete z warningiem)
+      TIKTOK_COOKIES_CONTENT: ${{ secrets.TIKTOK_COOKIES }}
+      INSTAGRAM_COOKIES_CONTENT: ${{ secrets.INSTAGRAM_COOKIES }}
+      # Apify (opcjonalne - jak ustawione, social.py uzyje Apify zamiast yt-dlp+cookies)
+      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
       SCRIPTS_PER_DAY: "3"
       CHANNEL_MIN_VIEWS: ${{ vars.CHANNEL_MIN_VIEWS || '500000' }}
       PYTHONUNBUFFERED: "1"
@@ -40,7 +44,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Sanity check - czy sekrety sa ustawione
+      - name: Sanity check - sekrety
         run: |
           missing=()
           if [ -z "${GEMINI_API_KEY}" ]; then missing+=("GEMINI_API_KEY"); fi
@@ -49,24 +53,26 @@ jobs:
           if [ -z "${TELEGRAM_CHAT_ID}" ]; then missing+=("TELEGRAM_CHAT_ID"); fi
           if [ ${#missing[@]} -ne 0 ]; then
             echo "::error::Brakuje sekretow: ${missing[*]}"
-            echo "::error::Dodaj je w: Settings -> Secrets and variables -> Actions -> New repository secret"
+            echo "::error::Dodaj je w: Settings -> Secrets and variables -> Actions"
             exit 1
           fi
-          echo "Wszystkie wymagane sekrety obecne."
+          echo "Sekrety obecne."
+          [ -n "${TIKTOK_COOKIES_CONTENT}" ] && echo "TIKTOK_COOKIES ustawione - TT bedzie aktywny." || echo "TIKTOK_COOKIES brak - TT bedzie pominiety."
+          [ -n "${INSTAGRAM_COOKIES_CONTENT}" ] && echo "INSTAGRAM_COOKIES ustawione - IG bedzie aktywny." || echo "INSTAGRAM_COOKIES brak - IG bedzie pominiety."
+          [ -n "${APIFY_TOKEN}" ] && echo "APIFY_TOKEN ustawione - mozliwy backup scrape." || echo "APIFY_TOKEN brak."
 
-      - name: Sanity check - czy swipe-file ma cokolwiek
+      - name: Sanity check - swipe-file
         run: |
           if [ ! -s data/swipe-file.txt ]; then
-            echo "::error::data/swipe-file.txt jest pusty lub nie istnieje."
+            echo "::error::data/swipe-file.txt pusty."
             exit 1
           fi
           non_comment=$(grep -v '^[[:space:]]*#' data/swipe-file.txt | grep -v '^[[:space:]]*$' | wc -l)
           if [ "$non_comment" -lt 1 ]; then
-            echo "::error::data/swipe-file.txt nie ma zadnych aktywnych linkow (wszystko zakomentowane)."
-            echo "::error::Edytuj plik na GitHubie - usun '#' z poczatku linkow do kanalow ktore chcesz uzyc."
+            echo "::error::Zero aktywnych linkow w data/swipe-file.txt"
             exit 1
           fi
-          echo "Znaleziono $non_comment aktywnych linkow w swipe-file."
+          echo "Aktywnych linkow: $non_comment"
 
       - name: Setup Python
         uses: actions/setup-python@v5
