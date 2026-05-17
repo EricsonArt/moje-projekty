@@ -3,8 +3,16 @@ name: Daily viral scripts
 on:
   schedule:
     # 05:00 UTC = 06:00 PL zima / 07:00 PL lato. Skrypty czekaja zanim wstaniesz.
+    # UWAGA: cron dziala TYLKO na default branch (main). Z innych branchy
+    # tylko workflow_dispatch (recznie z UI).
     - cron: "0 5 * * *"
   workflow_dispatch:  # ręczny trigger z GitHub UI
+    inputs:
+      skip_telegram:
+        description: "Pomin wyslanie na Telegram (tylko zapis do repo)"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write  # potrzebne do commit scripts/
@@ -25,11 +33,40 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       SCRIPTS_PER_DAY: "3"
+      CHANNEL_MIN_VIEWS: ${{ vars.CHANNEL_MIN_VIEWS || '500000' }}
       PYTHONUNBUFFERED: "1"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Sanity check - czy sekrety sa ustawione
+        run: |
+          missing=()
+          if [ -z "${GEMINI_API_KEY}" ]; then missing+=("GEMINI_API_KEY"); fi
+          if [ -z "${GROQ_API_KEY}" ]; then missing+=("GROQ_API_KEY"); fi
+          if [ -z "${TELEGRAM_BOT_TOKEN}" ]; then missing+=("TELEGRAM_BOT_TOKEN"); fi
+          if [ -z "${TELEGRAM_CHAT_ID}" ]; then missing+=("TELEGRAM_CHAT_ID"); fi
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "::error::Brakuje sekretow: ${missing[*]}"
+            echo "::error::Dodaj je w: Settings -> Secrets and variables -> Actions -> New repository secret"
+            exit 1
+          fi
+          echo "Wszystkie wymagane sekrety obecne."
+
+      - name: Sanity check - czy swipe-file ma cokolwiek
+        run: |
+          if [ ! -s data/swipe-file.txt ]; then
+            echo "::error::data/swipe-file.txt jest pusty lub nie istnieje."
+            exit 1
+          fi
+          non_comment=$(grep -v '^[[:space:]]*#' data/swipe-file.txt | grep -v '^[[:space:]]*$' | wc -l)
+          if [ "$non_comment" -lt 1 ]; then
+            echo "::error::data/swipe-file.txt nie ma zadnych aktywnych linkow (wszystko zakomentowane)."
+            echo "::error::Edytuj plik na GitHubie - usun '#' z poczatku linkow do kanalow ktore chcesz uzyc."
+            exit 1
+          fi
+          echo "Znaleziono $non_comment aktywnych linkow w swipe-file."
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -46,7 +83,12 @@ jobs:
         run: yt-dlp --version
 
       - name: Run pipeline
-        run: python -m src.main
+        run: |
+          if [ "${{ inputs.skip_telegram }}" = "true" ]; then
+            python -m src.main --no-telegram
+          else
+            python -m src.main
+          fi
 
       - name: Commit generated scripts
         if: success()
