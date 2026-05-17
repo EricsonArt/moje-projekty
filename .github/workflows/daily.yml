@@ -1,0 +1,69 @@
+name: Daily viral scripts
+
+on:
+  schedule:
+    # 05:00 UTC = 06:00 PL zima / 07:00 PL lato. Skrypty czekaja zanim wstaniesz.
+    - cron: "0 5 * * *"
+  workflow_dispatch:  # ręczny trigger z GitHub UI
+
+permissions:
+  contents: write  # potrzebne do commit scripts/
+
+concurrency:
+  group: daily-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      SCRIPTS_PER_DAY: "3"
+      PYTHONUNBUFFERED: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify yt-dlp
+        run: yt-dlp --version
+
+      - name: Run pipeline
+        run: python -m src.main
+
+      - name: Commit generated scripts
+        if: success()
+        run: |
+          git config user.name "viral-engine[bot]"
+          git config user.email "viral-engine@users.noreply.github.com"
+          git add scripts/
+          if git diff --cached --quiet; then
+            echo "No new scripts to commit."
+          else
+            git commit -m "scripts: $(date -u +%Y-%m-%d) daily run"
+            git push
+          fi
+
+      - name: Telegram alert on failure
+        if: failure() && env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != ''
+        run: |
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=Viral pipeline FAILED on $(date -u +%Y-%m-%d). Check: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"

@@ -1,0 +1,34 @@
+# Lista konkurentow ktorych filmy analizujemy.
+# WAZNE: na razie tylko YouTube Shorts (Faza 1). TikTok/IG dolaczamy w Fazie 3 (lokalny scraper).
+#
+# Eryku, wypelnij ta liste podajac mi 5-15 kanalow YT z PL ktore:
+# - dziala w niszy AI/personal brand/passive income/side hustle PL
+# - maja Shorty (krotkie pionowe filmy)
+# - regularnie wybijaja 100k+ views (sprawdz na ich profilu w sortowaniu po Shorts)
+#
+# Format: handle to to co po @ w url-u kanalu (np. "https://youtube.com/@MateuszGrzesiak" -> "MateuszGrzesiak")
+
+youtube_channels:
+  # PRZYKLAD - podmien na realne kanaly:
+  - handle: "EXAMPLE_PODMIEN"
+    name: "Przykład - nie analizuje, podmien przed odpaleniem"
+    niche: "AI content automation PL"
+    fetch_last_n_shorts: 10
+
+  # Dodaj tu wiecej, np:
+  # - handle: "MateuszGrzesiak"
+  #   name: "Mateusz Grzesiak"
+  #   niche: "personal brand PL"
+  #   fetch_last_n_shorts: 10
+
+# TikTok handles - na razie tylko placeholder, Faza 3 lokalnego scrapera.
+tiktok_handles: []
+
+# Instagram handles - na razie tylko placeholder.
+instagram_handles: []
+
+# Globalny limit ile filmow ciagniemy per run (oszczednosc YouTube API).
+max_videos_per_run: 5
+
+# Tylko Shortsy (pionowe, <60s). YT API filtruje po duration.
+shorts_only: true

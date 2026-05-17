@@ -1,0 +1,29 @@
+# Swipe file - lista viralowych Shortow YT do analizy.
+#
+# JAK TO DZIALA:
+# Codziennie pipeline bierze losowe 3 z tej listy, sciaga ich auto-subs PL,
+# i generuje 3 nowe skrypty inspirowane ich wzorcami (nie kopiujac contentu).
+#
+# JAK DODAWAC:
+# - 1 link na linijke
+# - Komentarze ignorowane (linijka zaczynajaca sie od #)
+# - Wspierane: YouTube Shorts URL (https://youtube.com/shorts/XYZ)
+# - TikTok / Instagram: w Fazie 3 (lokalny scraper)
+#
+# REKOMENDACJA:
+# - Wklejaj viralowe shorty Z TWOJEJ NISZY (AI / personal brand / passive income / side hustle PL)
+# - Min 50k views, im wiecej tym lepiej
+# - Min 10 shortow zeby pipeline mial z czego losowac
+# - Wymieniaj liste co 2-3 tygodnie zeby system nie sie nie nauczył 1 stylu
+
+# === Twoje linki (podmien ponizsze placeholder'y) ===
+
+# https://youtube.com/shorts/PRZYKLAD1
+# https://youtube.com/shorts/PRZYKLAD2
+# https://youtube.com/shorts/PRZYKLAD3
+# https://youtube.com/shorts/PRZYKLAD4
+# https://youtube.com/shorts/PRZYKLAD5
+
+# === Notatki / TODO ===
+# - Pamietaj zeby wkleic min 5 linkow ZANIM odpalisz pipeline
+# - Jezeli pipeline zwraca "no usable transcripts" - sprawdz czy linki maja auto-subs PL

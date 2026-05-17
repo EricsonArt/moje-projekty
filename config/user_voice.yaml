@@ -1,0 +1,109 @@
+# Glos Eryka - kalibracja po Fazie 1 na podstawie wygenerowanych skryptow.
+# Style Adapter trzyma sie tego twardo, Critic karze za odstepstwa.
+
+speaker:
+  name: "Eryk Hajduczek"
+  language: "polski"
+  register: "bezposredni, anti-guru, konkretny"
+  pronoun: "ty"             # zawsze 'ty', nigdy 'wy' w pojedynczym
+  intimacy: "kolega ktory wie wiecej, nie mentor z piedestalu"
+
+# Pierwsze slowa - wszystko inne to fail dla Critica.
+# Hook MUSI zaczynac sie pattern interruptem.
+first_words_rules:
+  forbidden_starts:
+    - "Czesc"
+    - "Hej"
+    - "Witam"
+    - "Dzisiaj"
+    - "Dzien dobry"
+    - "Drogi"
+    - "W tym filmie"
+    - "Pokaze ci jak"
+    - "Mam dla was"
+  preferred_starts:
+    - liczba_albo_szok           # "97% twórców..."
+    - kontrarian_claim           # "Twoj brand NIE potrzebuje..."
+    - pytanie_retoryczne_krotkie # "Wiesz dlaczego?"
+    - cytat_z_kogos              # "Ostatnio klient mi powiedzial..."
+
+banned_phrases:
+  # Guru-PL ktore Marek znienawidzi:
+  - "ostatnia szansa"
+  - "tylko dzisiaj"
+  - "OSTRZEGAM"
+  - "zostan milionerem"
+  - "wolnosc finansowa"
+  - "rzuc etat"
+  - "kiss your job goodbye"
+  - "diamentowy mindset"
+  - "alfa"
+
+  # Kalka z angielskiego:
+  - "pozwol mi"          # let me
+  - "tutaj jest"         # here is
+  - "spojrz na to"       # look at this
+  - "to znaczy ze"       # uzywaj "czyli"
+
+  # YouTube boomer-PL:
+  - "Witam serdecznie"
+  - "Mam nadzieje ze sie podobalo"
+  - "Subskrybujcie i lapcie kciuki"
+  - "Do zobaczenia w nastepnym"
+
+  # FOMO-cringe:
+  - "zegar tyka"
+  - "nie przegap"
+  - "obowiazkowo"
+
+# Sygnaturalne frazy Eryka - Style Adapter wkleja gdzie pasuje, nie na sile.
+signature_phrases:
+  - "Twoj biznes dziala, kiedy ty spisz"
+  - "10 minut. Raz. Zero pracy potem."
+  - "Trzy systemy. Jedno ustawienie. Praca 24/7."
+  - "Nie ma cudow - jest system."
+  - "Ja sam testowalem to na 840 tysiacach subow."
+
+signature_hooks:
+  # Wzorce dla Hook Generatora - 10 typow + 6 sygnaturowych:
+  - { type: "kontrarian",      template: "Twój X NIE potrzebuje [popular advice]. Oto co dziala." }
+  - { type: "liczba",          template: "[Konkretna liczba] [grupa] [robi szokujacą rzecz]." }
+  - { type: "shock_claim",     template: "Kazdy filmik 5000 views. Bez wyjatku." }
+  - { type: "transformation",  template: "Nie mam czasu na social media i wlasnie dlatego zarabiam [X]." }
+  - { type: "founder_line",    template: "Twoj biznes dziala, kiedy ty spisz." }
+  - { type: "curiosity_gap",   template: "Pokaze ci dlaczego twoj content NIE dziala (i co dziala zamiast)." }
+  - { type: "before_after",    template: "Rok temu publikowalem recznie. Teraz [X] - i robie wiecej views." }
+  - { type: "social_proof",    template: "[X] osob juz to ma. [Y] z nich [konkretny wynik] w [Z] dni." }
+  - { type: "problem_call",    template: "Jezeli [palace problem] - to nie twoja wina. System tak dziala." }
+  - { type: "hot_take",        template: "Niepopularna opinia: [contrarian truth o niszy]." }
+
+# Frazy w body - zaczerpniete z systemskala.pl.
+voice_anchors:
+  - "Nie ma cudów"
+  - "Trzy systemy"
+  - "Jedno ustawienie"
+  - "24/7"
+  - "Bez logowania do aplikacji"
+  - "10 minut setupu"
+  - "Konkretnie"
+  - "Pokaze ci to na liczbach"
+
+# Co kazdy hook MUSI miec - twarde reguly Critica.
+hook_hard_rules:
+  max_words: 12
+  max_seconds_spoken: 8
+  first_two_words_must_be: "pattern_interrupt"  # nie powitanie, nie self-intro
+  no_question_with_no_payoff: true              # "Wiesz co?" bez "Otoz..." = fail
+
+# Body - Hormozi PL.
+body_structure:
+  total_words: [75, 150]
+  total_seconds: [30, 60]
+  format: "HOOK -> AGITATE (1-2 zdania bolu) -> SOLVE (3 numerowane kroki) -> PATTERN_INTERRUPT -> CTA"
+
+# CTA - 3 sloty intensywnosci.
+cta_slots:
+  soft: "Wbij w bio, zrob quiz w 60 sekund, zobaczysz ktory z 4 modeli pasuje do ciebie."
+  mid:  "Link w bio prowadzi do quizu - 7 pytan, masz darmowy plan. 50 miejsc Founders zostalo."
+  hard: "Cena Founders -40% zlocked-in dozywotnio. Pakiet Komplet 1498 zl miesiac zamiast 7990. Link w bio."
+  vip:  "Otwieram 5 miejsc VIP. 3 miesiace jeden-na-jeden. Gwarancja 5 tysiecy zarobku albo kontynuacja gratis. Aplikuj w bio."

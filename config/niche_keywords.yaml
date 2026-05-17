@@ -1,0 +1,40 @@
+# Polskie keywordy do dwoch zastosowan:
+# 1. Whisper postprocess - mowiac szybko po polsku Whisper czasem zapisuje "sosial" zamiast "social"
+# 2. YouTube search filtering - jak nie wiemy ktore Shorty pobrac to filtrujemy po tych slowach
+
+niche_keywords:
+  # Tematy ktore robia views w niszy Eryka:
+  primary:
+    - "AI content"
+    - "AI generator"
+    - "personal brand"
+    - "marka osobista"
+    - "passive income"
+    - "pasywny dochod"
+    - "side hustle"
+    - "biznes online"
+    - "produkt cyfrowy"
+    - "ebook"
+    - "kurs online"
+    - "automatyzacja contentu"
+    - "TikTok growth"
+    - "Reels growth"
+    - "Instagram followers"
+    - "lejek sprzedazowy"
+    - "MRR"
+    - "skala"
+
+  # Whisper czesto myli (lewa = poprawne, prawa = zle interpretacje):
+  whisper_fixes:
+    "social": ["sosial", "soszial", "soshyal"]
+    "AI": ["a-j", "ai-aj", "ej-aj"]
+    "TikTok": ["tik-tok", "tiktoka"]
+    "Instagram": ["inszta", "insta"]
+    "Reels": ["rils", "rilsy"]
+    "Shorts": ["szorts", "shortsy"]
+    "viral": ["wirajl", "wiralny", "wirajlny"]
+    "follower": ["folloer", "folower"]
+    "engagement": ["endzejdzment"]
+    "lejek": ["lejk"]
+    "MRR": ["em-er-er"]
+    "Skala": ["skola"]

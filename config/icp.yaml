@@ -1,0 +1,96 @@
+# ICP (Ideal Customer Profile) - kogo skrypty targetują.
+# Topic Picker rotuje 70/30 (Marek:Anna), Hook Generator dostraja język.
+
+rotation:
+  primary_weight: 70   # Marek
+  secondary_weight: 30 # Anna
+
+personas:
+  marek:
+    name: "Marek"
+    age_range: [35, 50]
+    gender_split: { male: 65, female: 35 }
+    location: "PL, miasta 100k+"
+    income_pln_monthly: [8000, 25000]
+    education: "wyższe"
+
+    situation: >
+      Solopreneur, freelancer, właściciel małej firmy (1-5 osób) lub manager mid-level
+      chcący się usamodzielnić. Już zarabia, ale pracuje 50-60h/tydzień. Ekspert
+      techniczny (programista, marketer, finansista) który NIE chce pokazywać twarzy
+      bo boi się reakcji znajomych z LinkedIn.
+
+    pain: >
+      Wiem że trzeba mieć osobistą markę żeby zarabiać 50k+/mies, ale nie mam 4h dziennie
+      na pisanie postów, nie chcę pokazywać twarzy, każdy kurs zakładał 2 lata budowania
+      autorytetu. Chcę DZIAŁAJĄCY system, nie kolejne PDF.
+
+    desire: >
+      System który codziennie generuje content, buduje audiencję 100k+ w 6-12 miesięcy,
+      sprzedaje digital products w tle. Bez 4h dziennie. Bez bycia guru.
+
+    voice_notes:
+      prefers: ["konkrety", "liczby", "ROI", "MRR", "czas zwrotu", "lejek", "rate"]
+      avoids: ["ostatnia szansa", "zostań milionerem", "wolność finansowa", "guru-mówka"]
+
+    buying_triggers:
+      - "Social proof małych firm (zamiast celebrytów)"
+      - "Konkretny ROI rozpisany w czasie"
+      - "Mała realna grupa - '50 miejsc Founders' brzmi prawdziwie"
+      - "Risk reversal: 30 dni zwrotu, anuluj przez panel"
+      - "Klarna 0% - rozkłada koszt na 3 raty"
+
+    package_fit: [1, 3]
+    mid_ticket_sweet_spot: 1498  # PLN miesiecznie
+
+    where_scrolls: ["LinkedIn", "YouTube podcasty", "TikTok wieczorem", "Instagram"]
+
+  anna:
+    name: "Anna"
+    age_range: [38, 55]
+    gender_split: { male: 5, female: 95 }
+    location: "PL, średnie i duże miasta"
+    income_pln_monthly: [6000, 18000]
+    education: "wyższe humanistyczne lub biznesowe"
+    family: "mama 1-2 dzieci w wieku szkolnym lub nastolatków"
+
+    situation: >
+      Korpo HR/handlowiec/marketing manager LUB właścicielka małej firmy usługowej
+      (kosmetolog, coach, terapeuta, księgowa solo). Ma odłożone oszczędności
+      kilka-kilkanaście tysięcy, chce wyjść z etatu, ZA STARSZA na 'biznes z TikToka'
+      stylu 20-latek.
+
+    pain: >
+      Mam wiedzę, mam doświadczenie, ale nie umiem sprzedać siebie online. Wszystkie
+      kursy są dla 20-latków którzy tańczą na TikToku. Chcę profesjonalnie, ale skutecznie.
+
+    desire: >
+      Dodatkowy pasywny dochód 3-7k zł miesięcznie w 6-12 miesięcy, móc kiedyś
+      zwolnić się z etatu, elastyczność dla rodziny.
+
+    voice_notes:
+      prefers: ["storytelling", "empatia", "ja też się bałam", "krok po kroku", "bezpiecznie"]
+      avoids: ["agresywny ton", "FOMO timer", "liczbowe szpany"]
+
+    buying_triggers:
+      - "Storytelling klientek podobnych do niej"
+      - "Bezpieczeństwo: 30 dni zwrotu, brak umowy"
+      - "Kameralna społeczność WhatsApp max 50 osób"
+      - "Krok po kroku z gotowymi szablonami"
+
+    package_fit: [2, 3]
+    decision_cycle_weeks: [2, 4]  # Anna researchuje dluzej niz Marek
+
+    where_scrolls: ["Instagram", "Facebook grupy", "Pinterest"]
+
+# Topic Picker uzywa tego do rotacji USP per dzien tygodnia.
+# Indeks 0 = poniedzialek, 6 = niedziela.
+weekly_rotation:
+  - { day: "mon", persona: "marek", usp: "auto_publishing",  package: 1, cta_severity: "medium" }
+  - { day: "tue", persona: "marek", usp: "ai_product",       package: 3, cta_severity: "medium" }
+  - { day: "wed", persona: "anna",  usp: "full_loop",        package: 3, cta_severity: "low",    angle: "community" }
+  - { day: "thu", persona: "marek", usp: "viral_basis",      package: 1, cta_severity: "medium" }
+  - { day: "fri", persona: "marek", usp: "auto_publishing",  package: 4, cta_severity: "high",   angle: "transformacja" }
+  - { day: "sat", persona: "anna",  usp: "full_loop",        package: 3, cta_severity: "low",    angle: "case_study" }
+  - { day: "sun", persona: "marek", usp: "viral_basis",      package: 0, cta_severity: "low",    angle: "contrarian" }
+  # package: 0 = soft CTA do quizu (top of funnel), nie do checkout

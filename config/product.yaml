@@ -1,0 +1,149 @@
+# Skala - wszystkie dane produktowe które agenci wplatają w skrypty.
+# Edytujesz tutaj -> CTA Integrator i Body Generator natychmiast widzą zmiany.
+
+brand:
+  name: "Skala"
+  domain: "systemskala.pl"
+  founder: "Eryk Hajduczek"
+  founder_proof:
+    youtube_subs: "840k+"
+    tiktok_followers: "36k+"
+  tagline: "Twój biznes działa, kiedy Ty śpisz."
+  sub_headline: "Trzy systemy. Jedno ustawienie. Pracują 24/7."
+  founder_quote: "Jeśli masz wiedzę i niszę — nie powinieneś dźwigać produkcji samodzielnie."
+
+# Jednozdaniowe streszczenie tego, co Skala robi.
+# Używane w body kiedy trzeba edukować widza "co to w ogóle jest".
+one_liner: >
+  Skala generuje za Ciebie karuzele i shorty na TikTok/Instagram/Reddit/Facebook,
+  automatycznie je publikuje, i równolegle tworzy dopasowany do Twojej niszy
+  produkt cyfrowy z landing pagem - wszystko w 10 minut setupu.
+
+packages:
+  - id: 1
+    slug: "filmiki"
+    name: "Filmiki (karuzele TT/IG/Reels)"
+    price_founders_pln: 1198
+    price_founders_label: "1198 zł/mies"
+    price_regular_pln: 4490
+    price_regular_label: "4490 zł/mies"
+    cta_button: "Zaczynam zarabiać na filmikach"
+    use_when: "Skrypt fokus na content/growth - widz chce wybić się z postowaniem."
+    contains:
+      - "Generator filmików 5-10 slajdów"
+      - "Automatyczna publikacja na 4 platformy"
+      - "100+ haczyków uwagi"
+      - "Hashtagi i opisy"
+      - "Reklamy Facebook/Meta"
+      - "Poradniki wideo krok po kroku"
+
+  - id: 2
+    slug: "produkty"
+    name: "Produkty cyfrowe"
+    price_founders_pln: 898
+    price_founders_label: "898 zł/mies"
+    price_regular_pln: 3990
+    price_regular_label: "3990 zł/mies"
+    cta_button: "Tworzę pierwszy produkt"
+    use_when: "Skrypt fokus na side-income/monetyzację - widz ma wiedzę, chce ją sprzedać."
+    contains:
+      - "Asystent AI do tworzenia ebooków i kursów"
+      - "30+ gotowych poleceń"
+      - "Szablony okładek"
+      - "Sprzedaż online - BLIK, karta, faktura VAT"
+      - "Poradniki krok po kroku"
+
+  - id: 3
+    slug: "komplet"
+    name: "KOMPLET (filmiki + produkty + sprzedaż)"
+    most_popular: true
+    price_founders_pln: 1498
+    price_founders_label: "1498 zł/mies"
+    price_regular_pln: 7990
+    price_regular_label: "7990 zł/mies"
+    cta_button: "Wbijam pełen system"
+    use_when: "DEFAULT dla 70% skryptów - pełen flow content -> produkt -> sprzedaż."
+    contains:
+      - "Wszystko z Pakietu 1 i 2"
+      - "Pełna integracja lejka sprzedażowego"
+      - "Cotygodniowe livestreamy (piątki 19:00)"
+      - "Zamknięta grupa WhatsApp - max 50 osób"
+      - "AI Avatar UGC"
+      - "Dożywotnie aktualizacje"
+
+  - id: 4
+    slug: "vip"
+    name: "VIP (Komplet + 3 miesiące 1:1)"
+    seats_total: 5
+    price_one_time_pln: 7997
+    price_one_time_label: "7997 zł jednorazowo"
+    price_installments_label: "lub 3x2666 zł Klarna 0%"
+    cta_button: "Aplikuję na VIP"
+    use_when: "Hook fokus transformacja/high-trust - max 10% skryptów, scarcity 5 miejsc."
+    contains:
+      - "Wszystko z Pakietu 3"
+      - "12 spotkań 1:1 (45 min/tydzień przez 3 miesiące)"
+      - "Bezpośredni kontakt na Telegram/Signal - odpowiedź w 24h"
+      - "Analiza Twojej niszy"
+      - "Pomoc przy 3 pierwszych produktach"
+      - "Intensywny dzień (4h)"
+      - "Tytuł Founding Partner"
+      - "Priorytet do nowych funkcji"
+    guarantee: "Min. 5000 zł zarobku w 3 miesiące, albo kontynuacja gratis."
+
+# 4 mechanizmy USP. Topic Picker losuje 1 na skrypt zeby unikać powtórzeń.
+usps:
+  - id: "auto_publishing"
+    short: "Auto-publishing multi-platform"
+    long: "Raz ustawiasz, system wrzuca 10 filmików dziennie na TikToka, Instagrama, Reddita i Facebooka."
+    default_package: 1
+  - id: "ai_product"
+    short: "AI tworzy produkt cyfrowy za Ciebie"
+    long: "Ebook, kurs, landing, lead magnet - gotowe w 48 godzin, dopasowane do Twojej niszy."
+    default_package: 2
+  - id: "full_loop"
+    short: "Pełna pętla: content -> produkt -> sprzedaż"
+    long: "Trzy systemy, jedno ustawienie. Content przyciąga, produkt monetyzuje, lejek sprzedaje - 24/7."
+    default_package: 3
+  - id: "viral_basis"
+    short: "Każdy filmik bazuje na realnych viralach"
+    long: "Generator nie wymyśla - kopiuje wzorce z filmów które już wybiły 100k+ wyświetleń w Twojej niszy."
+    default_package: 1
+
+social_proof:
+  - "30 postów miesiąc automatycznie - bez logowania do aplikacji"
+  - "48h - tyle zajmuje system na wygenerowanie pełnego produktu cyfrowego"
+  - "Bonus dla Founders: darmowy produkt cyfrowy wart 13497 zł"
+  - "Cotygodniowe livestreamy w piątki 19:00 - pytania i odpowiedzi"
+  - "Zamknięta grupa WhatsApp max 50 osób - dostęp do Eryka i Founderów"
+  - "VIP gwarancja: minimum 5000 zł zarobku w 3 miesiące, albo kontynuacja gratis"
+
+# CTA Integrator rotuje scarcity zeby skrypty nie brzmiały tak samo.
+# Severity: jak agresywny push.
+scarcity:
+  - text: "Pierwsze 50 osób w cenie Founders - potem -40% znika na zawsze"
+    severity: "medium"
+    when_to_use: "Marek - rationalized, konkretna liczba"
+  - text: "VIP - tylko 5 miejsc, 3 miesiące jeden-na-jeden z Erykiem"
+    severity: "high"
+    when_to_use: "Skrypt VIP / transformacja / dla osob ktore juz cos sprzedaja"
+  - text: "Cena Founders zlocked-in dożywotnio - co miesiąc tyle samo co dzisiaj"
+    severity: "low"
+    when_to_use: "Loss aversion, miekka rama"
+  - text: "Dostęp Founders zamyka się w piątek - potem cena regularna"
+    severity: "high"
+    when_to_use: "Tylko gdy realna deadline. NIE uzywac na sztuke."
+
+risk_reversal:
+  - "30 dni zwrotu - bez pytań, bez ankiet"
+  - "Bez umowy. Anulujesz w każdej chwili przez panel."
+  - "Raty 0% Klarna - 3 raty zamiast jednej płatności"
+  - "BLIK, karta, faktura VAT - dla firm i osob prywatnych"
+
+# Funnel - dokad kierujemy widza w CTA.
+funnel:
+  bio_link: "systemskala.pl"
+  quiz_url: "systemskala.pl"
+  quiz_label: "quiz 7 pytań - 60 sekund - spersonalizowany plan"
+  checkout_url: "systemskala.pl/dostep"
+  founders_seats_total: 50

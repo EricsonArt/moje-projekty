@@ -1,0 +1,17 @@
+# Viral Content Engine - dependencies dla MVP (Faza 1)
+# Wszystko darmowe / open source. Zero platnych SDK.
+
+# HTTP / async - dla LLM API calls i Telegram
+httpx[http2]==0.27.2
+tenacity==9.0.0
+
+# Konfig - pydantic settings z .env
+pydantic==2.9.2
+pydantic-settings==2.6.1
+pyyaml>=6.0.1,<7.0
+
+# YouTube scraping i transkrypcja
+yt-dlp==2024.12.13
+
+# Util
+python-dateutil==2.9.0.post0
