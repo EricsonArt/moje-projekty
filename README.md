@@ -6,10 +6,17 @@ i prowadzace widza do oferty SaaS-u **Skala** (systemskala.pl).
 
 ## Co to robi w 1 zdaniu
 
-Bierze 3-10 **kanalow YT konkurencji**, automatycznie wyciaga z nich top viralowe Shorty
-(domyslnie >= 500k views), analizuje ich wzorce hookow -> generuje 3 oryginalne skrypty
-30-60s z hookiem + body (Hormozi PL) + CTA do pakietu Skala -> wysyla ci na Telegram do
-nagrania talking-head.
+Bierze 3-10 **kanalow YT/TikTok/Instagram konkurencji**, automatycznie wyciaga z nich top
+shorty (YT po views, TT/IG najnowsze), analizuje ich wzorce hookow -> generuje 3 oryginalne
+skrypty 30-60s z hookiem + body (Hormozi PL) + CTA do pakietu Skala -> wysyla ci na Telegram
+do nagrania talking-head.
+
+## Dwa tryby pracy
+
+- **Lokalnie na PC (Windows)** - pelne wsparcie YT + TT + IG. Wymaga cookies z Twojej
+  przegladarki dla TT/IG. Setup: [docs/SETUP-WINDOWS.md](docs/SETUP-WINDOWS.md).
+- **Chmura (GitHub Actions)** - tylko YouTube (TT/IG wymagaja logowania ktore nie dziala
+  z chmury bez ryzyka bana). Setup: [docs/SETUP.md](docs/SETUP.md).
 
 ## Stack (caly darmowy)
 
@@ -19,11 +26,10 @@ nagrania talking-head.
 - **Delivery**: Telegram bot
 - **Storage**: pliki .md w `scripts/YYYY-MM-DD/` (commitowane do repo)
 
-## Quick start (3 kroki)
+## Quick start
 
-1. **Wez darmowe API keys** - patrz [docs/SETUP.md](docs/SETUP.md) krok po kroku (~15 min)
-2. **Wpisz secrets do GitHub Actions** lub `.env` lokalnie
-3. **Wklejaj linki do KANALOW YT** do `data/swipe-file.txt` (min 3 kanaly, refresh co 2-3 tyg)
+- **Tryb lokalny Windows (TT+IG+YT)**: [docs/SETUP-WINDOWS.md](docs/SETUP-WINDOWS.md) (~30-45 min)
+- **Tryb chmurowy (tylko YT)**: [docs/SETUP.md](docs/SETUP.md) (~15 min)
 
 Test lokalny:
 ```bash

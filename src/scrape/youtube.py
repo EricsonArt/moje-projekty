@@ -21,6 +21,8 @@ RAW_DIR = DATA_DIR / "raw"
 
 @dataclass
 class YoutubeVideo:
+    """Univeralny kontener na source video - YT, TT lub IG (mimo nazwy).
+    Nazwa zostawiona dla zgodnosci z generate/critic pipeline'ami."""
     url: str
     video_id: str
     title: str = ""
@@ -31,6 +33,7 @@ class YoutubeVideo:
     transcript_path: Optional[Path] = None
     info_json_path: Optional[Path] = None
     error: Optional[str] = None
+    platform: str = "youtube"  # "youtube" | "tiktok" | "instagram"
 
 
 def _check_ytdlp_available() -> bool:

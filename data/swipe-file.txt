@@ -1,38 +1,57 @@
-# Swipe file - lista KANALOW YT (lub pojedynczych shortow) do analizy.
+# Swipe file - linki do KANALOW (lub pojedynczych filmow) ze short formem.
 #
-# JAK TO DZIALA (Faza 1.5):
-# 1. Z kazdego kanalu na liscie pipeline pobiera top shorty (sortuje po views).
-# 2. Filtruje >= CHANNEL_MIN_VIEWS (domyslnie 500 000 wyswietlen).
-# 3. Bierze max CHANNEL_MAX_SHORTS_PER_CHANNEL z kazdego kanalu (domyslnie 10).
-# 4. Z puli losuje 3 i generuje 3 nowe skrypty inspirowane wzorcami.
-# 5. Wyslyla na Telegrama.
+# JAK TO DZIALA:
+# 1. Z kazdego kanalu pipeline wyciaga top shorty (YT) lub najnowsze (TT/IG).
+# 2. Dla YT: filtr po wyswietleniach (default >= 500 000, zmienialny w .env).
+# 3. Dla TT/IG: bierze N najnowszych (TT/IG nie udostepnia view_count w listach).
+# 4. Z calej puli losuje 3 codziennie i generuje 3 nowe skrypty.
+# 5. Wysyla na Telegram.
+#
+# WAZNE: TT i IG wymagaja COOKIES w data/cookies/ - patrz docs/SETUP-WINDOWS.md
 #
 # WSPIERANE FORMATY:
-#   https://www.youtube.com/@nazwa                  <- kanal (REKOMENDOWANE)
-#   https://www.youtube.com/@nazwa/shorts           <- zakladka shorts kanalu
-#   https://www.youtube.com/channel/UCxxxxxxxxx     <- kanal po ID
-#   https://www.youtube.com/c/nazwa                 <- stary format
-#   https://youtube.com/shorts/XYZ                  <- pojedynczy short (bez filtra views)
+#
+# YouTube (kanaly):
+#   https://www.youtube.com/@nazwa
+#   https://www.youtube.com/@nazwa/shorts
+#   https://www.youtube.com/channel/UCxxxxxxxxx
+#
+# YouTube (pojedyncze shorty - bez filtra views):
+#   https://youtube.com/shorts/XYZ
+#
+# TikTok (profile):
+#   https://www.tiktok.com/@nazwa
+#
+# TikTok (pojedyncze filmy):
+#   https://www.tiktok.com/@nazwa/video/1234567890
+#
+# Instagram (profile):
+#   https://www.instagram.com/nazwa
+#   https://www.instagram.com/nazwa/
+#
+# Instagram (pojedyncze rolki):
+#   https://www.instagram.com/reel/ABC123/
 #
 # REKOMENDACJA:
-# - Wklejaj 5-10 kanalow Z TWOJEJ NISZY (AI / personal brand / passive income / side hustle PL)
-# - Wybieraj kanaly z duza iloscia viralowych shortow (>500k views regularnie)
-# - Wymieniaj liste co 2-3 tygodnie zeby system nie wpadl w 1 styl
-#
-# DOSTRAJANIE PROGU:
-# - Jezeli pipeline mowi "zero shorts >= 500000 views" - kanal jest za maly.
-#   Mozesz obnizyc prog ustawiajac CHANNEL_MIN_VIEWS=200000 w .env (lub w GitHub Secrets).
-# - Mozesz tez podniesc dla ostrzejszej selekcji (np. 1 000 000).
+# - 3-10 kanalow z Twojej niszy mix YT/TT/IG (np. 3 YT + 3 TT + 3 IG)
+# - Wymieniaj co 2-3 tygodnie zeby system nie wpadl w 1 styl
+# - Zaloz drugie konto TT/IG do podpiecia (cookies) - ochrona glownego konta
 
-# === Twoje kanaly (podmien placeholdery na prawdziwe linki) ===
+# === Twoje kanaly (podmien placeholdery) ===
 
-# https://www.youtube.com/@PRZYKLAD_KANAL_1
-# https://www.youtube.com/@PRZYKLAD_KANAL_2
-# https://www.youtube.com/@PRZYKLAD_KANAL_3
-# https://www.youtube.com/@PRZYKLAD_KANAL_4
-# https://www.youtube.com/@PRZYKLAD_KANAL_5
+# YouTube:
+# https://www.youtube.com/@PRZYKLAD_YT_1
+# https://www.youtube.com/@PRZYKLAD_YT_2
+
+# TikTok (wymaga data/cookies/tiktok.txt):
+# https://www.tiktok.com/@PRZYKLAD_TT_1
+# https://www.tiktok.com/@PRZYKLAD_TT_2
+
+# Instagram (wymaga data/cookies/instagram.txt):
+# https://www.instagram.com/PRZYKLAD_IG_1
+# https://www.instagram.com/PRZYKLAD_IG_2
 
 # === Notatki ===
-# - Min 3 kanaly zanim odpalisz pipeline.
-# - Jak nie wiesz kogo wybrac: wpisz w YT "AI biznes shorts" / "passive income shorts polska",
-#   posortuj kanaly po subskrybentach i bierz top 5-10.
+# - Min 3 zrodla na start.
+# - Jezeli pipeline mowi "no usable transcripts" dla YT -> zmien kanal na taki ktory robi PL napisy.
+# - Jezeli pipeline mowi "zero shorts >= 500000 views" -> obniz CHANNEL_MIN_VIEWS w .env.

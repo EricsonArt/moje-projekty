@@ -1,17 +1,23 @@
 """Parser swipe-file.txt - linki ktore Eryk wkleil recznie.
 
-Wspierane formaty (Faza 1.5):
-    # komentarze ignorowane
-    https://www.youtube.com/@nazwa                -> kanal: pobierz top shorts >= min_views
-    https://www.youtube.com/@nazwa/shorts         -> kanal shorts: jak wyzej
-    https://www.youtube.com/channel/UCxxx         -> kanal po ID
-    https://www.youtube.com/c/nazwa               -> kanal stary format
-    https://www.youtube.com/user/nazwa            -> kanal stary format
+Wspierane formaty (Faza 1.5 + lokalny TT/IG):
 
-    https://youtube.com/shorts/XYZ                -> pojedynczy short (bez filtra views)
-    https://youtu.be/XYZ                          -> pojedynczy film
-    https://www.tiktok.com/@xxx/video/123         -> TikTok (Faza 3)
-    https://www.instagram.com/p/XYZ               -> IG (Faza 3)
+YouTube:
+    https://www.youtube.com/@nazwa                -> kanal: top shorts >= min_views
+    https://www.youtube.com/@nazwa/shorts         -> zakladka shorts
+    https://www.youtube.com/channel/UCxxx         -> kanal po ID
+    https://www.youtube.com/c/nazwa               -> stary format
+    https://youtube.com/shorts/XYZ                -> pojedynczy short
+
+TikTok (wymaga cookies w data/cookies/tiktok.txt):
+    https://www.tiktok.com/@nazwa                 -> profil: najnowsze shorty
+    https://www.tiktok.com/@nazwa/video/123       -> pojedynczy film
+
+Instagram (wymaga cookies w data/cookies/instagram.txt):
+    https://www.instagram.com/nazwa               -> profil: najnowsze rolki
+    https://www.instagram.com/nazwa/              -> j.w.
+    https://www.instagram.com/reel/XYZ            -> pojedyncza rolka
+    https://www.instagram.com/p/XYZ               -> pojedynczy post
 """
 from __future__ import annotations
 
@@ -23,33 +29,60 @@ from typing import Iterable
 
 log = logging.getLogger(__name__)
 
-# Channel patterns (sprawdzane PRZED video patterns - musza miec priorytet)
+# Kolejnosc regexow ma znaczenie - kanaly PRZED video (inaczej video lapie kanal)
+
 YT_CHANNEL_RE = re.compile(
     r"https?://(?:www\.|m\.)?youtube\.com/"
-    r"(?:@[\w.\-]+(?:/shorts)?/?$|"          # @handle lub @handle/shorts
-    r"channel/UC[\w\-]+/?(?:shorts/?)?$|"   # channel/UCxxx
-    r"c/[\w.\-]+/?(?:shorts/?)?$|"          # c/nazwa
-    r"user/[\w.\-]+/?(?:shorts/?)?$)",      # user/nazwa
+    r"(?:@[\w.\-]+(?:/shorts)?/?$|"
+    r"channel/UC[\w\-]+/?(?:shorts/?)?$|"
+    r"c/[\w.\-]+/?(?:shorts/?)?$|"
+    r"user/[\w.\-]+/?(?:shorts/?)?$)",
     re.I,
 )
 YT_VIDEO_RE = re.compile(
     r"https?://(?:www\.|m\.)?(?:youtube\.com/(?:shorts/|watch\?v=)|youtu\.be/)[\w\-]+",
     re.I,
 )
-TIKTOK_RE = re.compile(r"https?://(?:www\.)?tiktok\.com/[\S]+", re.I)
-IG_RE = re.compile(r"https?://(?:www\.)?instagram\.com/(?:p|reel)/[\S]+", re.I)
+
+TIKTOK_CHANNEL_RE = re.compile(
+    r"https?://(?:www\.|m\.)?tiktok\.com/@[\w.\-]+/?$",
+    re.I,
+)
+TIKTOK_VIDEO_RE = re.compile(
+    r"https?://(?:www\.|m\.)?tiktok\.com/@[\w.\-]+/(?:video|photo)/\d+",
+    re.I,
+)
+
+# IG: profil to /nazwa/ bez /p/ ani /reel/. Trzeba sprawdzic ostroznie.
+IG_CHANNEL_RE = re.compile(
+    r"https?://(?:www\.)?instagram\.com/(?!p/|reel/|reels/|stories/|tv/|explore/)"
+    r"[\w.\-]+/?$",
+    re.I,
+)
+IG_VIDEO_RE = re.compile(
+    r"https?://(?:www\.)?instagram\.com/(?:p|reel|reels|tv)/[\w\-]+",
+    re.I,
+)
 
 
 @dataclass
 class SourceLink:
     url: str
-    kind: str       # "yt_channel" | "yt_video" | "tiktok" | "instagram"
+    kind: str
+    # Mozliwe wartosci kind:
+    #   "yt_channel" | "yt_video"
+    #   "tt_channel" | "tt_video"
+    #   "ig_channel" | "ig_video"
 
     @property
     def platform(self) -> str:
         if self.kind.startswith("yt_"):
             return "youtube"
-        return self.kind
+        if self.kind.startswith("tt_"):
+            return "tiktok"
+        if self.kind.startswith("ig_"):
+            return "instagram"
+        return "unknown"
 
 
 def parse_swipe_file(path: Path) -> list[SourceLink]:
@@ -62,7 +95,6 @@ def parse_swipe_file(path: Path) -> list[SourceLink]:
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        # Strip trailing inline comments
         if "#" in line:
             line = line.split("#", 1)[0].strip()
         kind = _detect_kind(line)
@@ -74,27 +106,27 @@ def parse_swipe_file(path: Path) -> list[SourceLink]:
 
 
 def _detect_kind(url: str) -> str | None:
-    # Kanaly maja priorytet - inaczej "youtube.com/@nazwa" zlapie video regex
+    # Kolejnosc: kanaly przed videos w obrebie platformy
     if YT_CHANNEL_RE.match(url):
         return "yt_channel"
     if YT_VIDEO_RE.match(url):
         return "yt_video"
-    if TIKTOK_RE.match(url):
-        return "tiktok"
-    if IG_RE.match(url):
-        return "instagram"
+    if TIKTOK_CHANNEL_RE.match(url):
+        return "tt_channel"
+    if TIKTOK_VIDEO_RE.match(url):
+        return "tt_video"
+    if IG_VIDEO_RE.match(url):
+        return "ig_video"
+    if IG_CHANNEL_RE.match(url):
+        return "ig_channel"
     return None
 
 
 def filter_supported(links: Iterable[SourceLink]) -> list[SourceLink]:
-    """W Fazie 1/1.5 wspieramy YouTube (kanaly + filmy). TT/IG = Faza 3."""
-    out: list[SourceLink] = []
-    for link in links:
-        if link.kind in ("yt_channel", "yt_video"):
-            out.append(link)
-        else:
-            log.warning(
-                "Skipping %s link (TikTok/IG scraping comes in Faza 3): %s",
-                link.kind, link.url,
-            )
-    return out
+    """Wszystkie 6 rodzajow wspierane (YT/TT/IG, kanaly i video). Cookies wymagane
+    dla TT/IG sprawdza warstwa scrape, nie ten parser."""
+    return [l for l in links if l.kind in {
+        "yt_channel", "yt_video",
+        "tt_channel", "tt_video",
+        "ig_channel", "ig_video",
+    }]

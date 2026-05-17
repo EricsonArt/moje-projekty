@@ -25,9 +25,12 @@ data/raw/
 *.opus
 *.wav
 
-# Cookies (TT/IG scraping w fazie 3)
+# Cookies - sesje logowania TT/IG/YT, NIGDY nie commitujemy
 *.cookies
 cookies.txt
+data/cookies/*.txt
+data/cookies/*.cookies
+!data/cookies/README.txt
 
 # Models (faster-whisper w fazie 2)
 models/

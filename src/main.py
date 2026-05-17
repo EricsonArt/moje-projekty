@@ -32,6 +32,13 @@ from src.generate.pipeline import (
     pick_topic_for_today,
 )
 from src.llm.router import LLMRouter
+from src.scrape.social import (
+    cookies_status,
+    expand_instagram_channel,
+    expand_tiktok_channel,
+    fetch_social_many,
+    social_pseudo_transcript,
+)
 from src.scrape.swipe_file import filter_supported, parse_swipe_file
 from src.scrape.youtube import expand_channel, fetch_many, YoutubeVideo
 from src.settings import DATA_DIR, settings
@@ -43,24 +50,49 @@ MAX_CRITIC_ITERATIONS = 3
 MIN_TRANSCRIPT_CHARS = 80  # ponizej tego transkrypt = za krotki, skip
 
 
-async def _fetch_and_transcribe(urls: list[str]) -> list[tuple[YoutubeVideo, str]]:
-    """Sciaga metadata + auto-subs PL, parsuje VTT do tekstu. Zwraca tylko te
-    co maja sensowny transkrypt."""
+async def _empty_sources() -> list[tuple[YoutubeVideo, str]]:
+    return []
+
+
+async def _fetch_and_transcribe_youtube(urls: list[str]) -> list[tuple[YoutubeVideo, str]]:
+    """YT: sciaga metadata + auto-subs PL, parsuje VTT. Zwraca tylko te z subami."""
     videos = await fetch_many(urls, concurrency=3)
     out = []
     for v in videos:
         if v.error:
-            log.warning("Source video %s failed: %s", v.url, v.error)
+            log.warning("YT source %s failed: %s", v.url, v.error)
             continue
         if not v.transcript_path:
-            log.warning("Source video %s has no transcript", v.url)
+            log.warning("YT source %s has no transcript", v.url)
             continue
         text = parse_vtt(v.transcript_path)
         if len(text) < MIN_TRANSCRIPT_CHARS:
-            log.warning(
-                "Source video %s transcript too short (%d chars), skipping",
-                v.url, len(text),
-            )
+            log.warning("YT %s transcript too short (%d chars), skipping",
+                        v.url, len(text))
+            continue
+        out.append((v, text))
+    return out
+
+
+async def _fetch_social(
+    tiktok_urls: list[str], instagram_urls: list[str],
+) -> list[tuple[YoutubeVideo, str]]:
+    """TT/IG: sciaga metadata przez yt-dlp+cookies. Pseudo-transkrypt = tytul+opis."""
+    items: list[tuple[str, str]] = []
+    items.extend((u, "tiktok") for u in tiktok_urls)
+    items.extend((u, "instagram") for u in instagram_urls)
+    if not items:
+        return []
+    videos = await fetch_social_many(items, concurrency=2)
+    out = []
+    for v in videos:
+        if v.error:
+            log.warning("%s source %s failed: %s", v.platform, v.url, v.error)
+            continue
+        text = social_pseudo_transcript(v)
+        if len(text) < MIN_TRANSCRIPT_CHARS:
+            log.warning("%s %s pseudo-transcript too short (%d chars), skipping",
+                        v.platform, v.url, len(text))
             continue
         out.append((v, text))
     return out
@@ -147,54 +179,117 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
     # 1. Read swipe file
     links = parse_swipe_file(swipe_file)
     log.info("Swipe file: %d links found", len(links))
-    yt_links = filter_supported(links)
-    channels = [l for l in yt_links if l.kind == "yt_channel"]
-    direct_videos = [l for l in yt_links if l.kind == "yt_video"]
-    log.info(
-        "YouTube inputs: %d channels + %d direct videos",
-        len(channels), len(direct_videos),
-    )
-    if not yt_links:
+    supported = filter_supported(links)
+    if not supported:
         log.error(
-            "No YouTube links in swipe file. Edit %s with channel URLs (e.g. youtube.com/@nazwa).",
+            "No supported links in %s. Wklejaj YT/TT/IG kanaly lub filmy.",
             swipe_file,
         )
         return []
 
-    # 1b. Expand channels -> top viral shorts (>= min_views)
-    expanded_urls: list[str] = [l.url for l in direct_videos]
-    if channels:
-        expansions = await asyncio.gather(*(
+    yt_channels = [l for l in supported if l.kind == "yt_channel"]
+    yt_videos = [l for l in supported if l.kind == "yt_video"]
+    tt_channels = [l for l in supported if l.kind == "tt_channel"]
+    tt_videos = [l for l in supported if l.kind == "tt_video"]
+    ig_channels = [l for l in supported if l.kind == "ig_channel"]
+    ig_videos = [l for l in supported if l.kind == "ig_video"]
+    log.info(
+        "Inputs: YT=%dch+%dv | TT=%dch+%dv | IG=%dch+%dv",
+        len(yt_channels), len(yt_videos),
+        len(tt_channels), len(tt_videos),
+        len(ig_channels), len(ig_videos),
+    )
+
+    # 1a. Cookies status (TT/IG wymagaja cookies, ostrzezenie jak nie ma)
+    cookies = await cookies_status()
+    if tt_channels or tt_videos:
+        if not cookies["tiktok"]:
+            log.warning(
+                "TikTok links in swipe-file ale brak data/cookies/tiktok.txt - "
+                "TT bedzie pominiety. Patrz docs/SETUP-WINDOWS.md.",
+            )
+    if ig_channels or ig_videos:
+        if not cookies["instagram"]:
+            log.warning(
+                "Instagram links in swipe-file ale brak data/cookies/instagram.txt - "
+                "IG bedzie pominiety. Patrz docs/SETUP-WINDOWS.md.",
+            )
+
+    # 1b. Expand channels per platform
+    yt_urls: list[str] = [l.url for l in yt_videos]
+    tt_urls: list[str] = [l.url for l in tt_videos]
+    ig_urls: list[str] = [l.url for l in ig_videos]
+
+    if yt_channels:
+        yt_expansions = await asyncio.gather(*(
             expand_channel(
                 ch.url,
                 min_views=settings.channel_min_views,
                 max_per_channel=settings.channel_max_shorts_per_channel,
                 scan_depth=settings.channel_scan_depth,
             )
-            for ch in channels
+            for ch in yt_channels
         ))
-        for ch, urls in zip(channels, expansions):
+        for ch, urls in zip(yt_channels, yt_expansions):
             if not urls:
-                log.warning("Channel %s yielded 0 viral shorts - skipping", ch.url)
-            expanded_urls.extend(urls)
+                log.warning("YT channel %s yielded 0 viral shorts", ch.url)
+            yt_urls.extend(urls)
 
-    # Dedup zachowujac kolejnosc
-    seen: set[str] = set()
-    final_urls: list[str] = []
-    for u in expanded_urls:
-        if u not in seen:
-            seen.add(u)
-            final_urls.append(u)
-    log.info("Total viral shorts to fetch: %d (after dedup)", len(final_urls))
-    if not final_urls:
+    if tt_channels and cookies["tiktok"]:
+        tt_expansions = await asyncio.gather(*(
+            expand_tiktok_channel(
+                ch.url,
+                max_per_channel=settings.channel_max_shorts_per_channel,
+                scan_depth=settings.channel_scan_depth,
+            )
+            for ch in tt_channels
+        ))
+        for ch, urls in zip(tt_channels, tt_expansions):
+            if not urls:
+                log.warning("TT channel %s yielded 0 videos", ch.url)
+            tt_urls.extend(urls)
+
+    if ig_channels and cookies["instagram"]:
+        ig_expansions = await asyncio.gather(*(
+            expand_instagram_channel(
+                ch.url,
+                max_per_channel=settings.channel_max_shorts_per_channel,
+                scan_depth=settings.channel_scan_depth,
+            )
+            for ch in ig_channels
+        ))
+        for ch, urls in zip(ig_channels, ig_expansions):
+            if not urls:
+                log.warning("IG channel %s yielded 0 videos", ch.url)
+            ig_urls.extend(urls)
+
+    # Dedup per platform
+    def _dedup(urls: list[str]) -> list[str]:
+        seen: set[str] = set()
+        out = []
+        for u in urls:
+            if u not in seen:
+                seen.add(u)
+                out.append(u)
+        return out
+
+    yt_urls = _dedup(yt_urls)
+    tt_urls = _dedup(tt_urls)
+    ig_urls = _dedup(ig_urls)
+    log.info("Po dedup: YT=%d, TT=%d, IG=%d", len(yt_urls), len(tt_urls), len(ig_urls))
+
+    if not (yt_urls or tt_urls or ig_urls):
         log.error(
-            "No viral shorts collected. Check channel URLs in %s or lower CHANNEL_MIN_VIEWS (currently %d).",
+            "No videos collected. Sprawdz kanaly w %s, cookies, lub CHANNEL_MIN_VIEWS (now=%d).",
             swipe_file, settings.channel_min_views,
         )
         return []
 
-    # 2. Fetch + transcribe
-    sources = await _fetch_and_transcribe(final_urls)
+    # 2. Fetch + transcribe per platform (rownolegle)
+    yt_sources_task = _fetch_and_transcribe_youtube(yt_urls) if yt_urls else _empty_sources()
+    social_sources_task = _fetch_social(tt_urls, ig_urls) if (tt_urls or ig_urls) else _empty_sources()
+    yt_sources, social_sources = await asyncio.gather(yt_sources_task, social_sources_task)
+    sources = yt_sources + social_sources
     log.info("Usable sources after transcription: %d", len(sources))
     if not sources:
         log.error("No source videos with usable transcripts - aborting")
