@@ -1,29 +1,38 @@
-# Swipe file - lista viralowych Shortow YT do analizy.
+# Swipe file - lista KANALOW YT (lub pojedynczych shortow) do analizy.
 #
-# JAK TO DZIALA:
-# Codziennie pipeline bierze losowe 3 z tej listy, sciaga ich auto-subs PL,
-# i generuje 3 nowe skrypty inspirowane ich wzorcami (nie kopiujac contentu).
+# JAK TO DZIALA (Faza 1.5):
+# 1. Z kazdego kanalu na liscie pipeline pobiera top shorty (sortuje po views).
+# 2. Filtruje >= CHANNEL_MIN_VIEWS (domyslnie 500 000 wyswietlen).
+# 3. Bierze max CHANNEL_MAX_SHORTS_PER_CHANNEL z kazdego kanalu (domyslnie 10).
+# 4. Z puli losuje 3 i generuje 3 nowe skrypty inspirowane wzorcami.
+# 5. Wyslyla na Telegrama.
 #
-# JAK DODAWAC:
-# - 1 link na linijke
-# - Komentarze ignorowane (linijka zaczynajaca sie od #)
-# - Wspierane: YouTube Shorts URL (https://youtube.com/shorts/XYZ)
-# - TikTok / Instagram: w Fazie 3 (lokalny scraper)
+# WSPIERANE FORMATY:
+#   https://www.youtube.com/@nazwa                  <- kanal (REKOMENDOWANE)
+#   https://www.youtube.com/@nazwa/shorts           <- zakladka shorts kanalu
+#   https://www.youtube.com/channel/UCxxxxxxxxx     <- kanal po ID
+#   https://www.youtube.com/c/nazwa                 <- stary format
+#   https://youtube.com/shorts/XYZ                  <- pojedynczy short (bez filtra views)
 #
 # REKOMENDACJA:
-# - Wklejaj viralowe shorty Z TWOJEJ NISZY (AI / personal brand / passive income / side hustle PL)
-# - Min 50k views, im wiecej tym lepiej
-# - Min 10 shortow zeby pipeline mial z czego losowac
-# - Wymieniaj liste co 2-3 tygodnie zeby system nie sie nie nauczył 1 stylu
+# - Wklejaj 5-10 kanalow Z TWOJEJ NISZY (AI / personal brand / passive income / side hustle PL)
+# - Wybieraj kanaly z duza iloscia viralowych shortow (>500k views regularnie)
+# - Wymieniaj liste co 2-3 tygodnie zeby system nie wpadl w 1 styl
+#
+# DOSTRAJANIE PROGU:
+# - Jezeli pipeline mowi "zero shorts >= 500000 views" - kanal jest za maly.
+#   Mozesz obnizyc prog ustawiajac CHANNEL_MIN_VIEWS=200000 w .env (lub w GitHub Secrets).
+# - Mozesz tez podniesc dla ostrzejszej selekcji (np. 1 000 000).
 
-# === Twoje linki (podmien ponizsze placeholder'y) ===
+# === Twoje kanaly (podmien placeholdery na prawdziwe linki) ===
 
-# https://youtube.com/shorts/PRZYKLAD1
-# https://youtube.com/shorts/PRZYKLAD2
-# https://youtube.com/shorts/PRZYKLAD3
-# https://youtube.com/shorts/PRZYKLAD4
-# https://youtube.com/shorts/PRZYKLAD5
+# https://www.youtube.com/@PRZYKLAD_KANAL_1
+# https://www.youtube.com/@PRZYKLAD_KANAL_2
+# https://www.youtube.com/@PRZYKLAD_KANAL_3
+# https://www.youtube.com/@PRZYKLAD_KANAL_4
+# https://www.youtube.com/@PRZYKLAD_KANAL_5
 
-# === Notatki / TODO ===
-# - Pamietaj zeby wkleic min 5 linkow ZANIM odpalisz pipeline
-# - Jezeli pipeline zwraca "no usable transcripts" - sprawdz czy linki maja auto-subs PL
+# === Notatki ===
+# - Min 3 kanaly zanim odpalisz pipeline.
+# - Jak nie wiesz kogo wybrac: wpisz w YT "AI biznes shorts" / "passive income shorts polska",
+#   posortuj kanaly po subskrybentach i bierz top 5-10.

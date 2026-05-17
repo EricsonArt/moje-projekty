@@ -130,3 +130,130 @@ async def fetch_many(urls: list[str], concurrency: int = 3) -> list[YoutubeVideo
             return await fetch_video(u)
 
     return await asyncio.gather(*(_bounded(u) for u in urls))
+
+
+def _normalize_channel_to_shorts_tab(url: str) -> str:
+    """Zwroc URL zakladki /shorts dla kanalu. Jesli juz tam jest - bez zmian."""
+    u = url.rstrip("/")
+    if u.endswith("/shorts"):
+        return u
+    return u + "/shorts"
+
+
+@dataclass
+class ChannelShort:
+    """Plytki wpis z listy shortow kanalu (przed pelnym fetchem)."""
+    video_id: str
+    url: str
+    title: str = ""
+    view_count: int = 0
+    duration_s: int = 0
+
+
+async def list_channel_shorts(
+    channel_url: str,
+    scan_depth: int = 30,
+    timeout: float = 90.0,
+) -> list[ChannelShort]:
+    """Listuj top N shortow z zakladki /shorts kanalu (flat-playlist, bez subow).
+
+    Uzywa --flat-playlist + --print zeby uniknac pelnego extracta dla kazdego filmu.
+    Zwraca posortowane po views malejaco (najpopularniejsze pierwsze).
+    """
+    if not _check_ytdlp_available():
+        log.error("yt-dlp not installed - cannot list channel shorts")
+        return []
+
+    target = _normalize_channel_to_shorts_tab(channel_url)
+
+    # %()j daje JSON per linijka - latwo parsowac, dziala dla yt-dlp >= 2023
+    cmd = [
+        "yt-dlp",
+        "--flat-playlist",
+        "--playlist-end", str(scan_depth),
+        "--print", "%(id)s\t%(title)s\t%(view_count)s\t%(duration)s",
+        "--no-warnings",
+        "--quiet",
+        target,
+    ]
+    log.info("yt-dlp listing channel shorts: %s (depth=%d)", target, scan_depth)
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+        except asyncio.TimeoutError:
+            proc.kill()
+            log.error("yt-dlp channel list timeout (%ss) for %s", timeout, target)
+            return []
+
+        if proc.returncode != 0:
+            log.error(
+                "yt-dlp channel list failed (%d) for %s: %s",
+                proc.returncode, target, stderr.decode()[:300],
+            )
+            return []
+    except FileNotFoundError:
+        log.error("yt-dlp binary not found in PATH")
+        return []
+
+    shorts: list[ChannelShort] = []
+    for line in stdout.decode("utf-8", errors="replace").splitlines():
+        parts = line.split("\t")
+        if len(parts) < 4:
+            continue
+        vid_id, title, views_str, dur_str = parts[0], parts[1], parts[2], parts[3]
+        if not vid_id or vid_id == "NA":
+            continue
+        try:
+            views = int(views_str) if views_str and views_str != "NA" else 0
+        except ValueError:
+            views = 0
+        try:
+            dur = int(float(dur_str)) if dur_str and dur_str != "NA" else 0
+        except ValueError:
+            dur = 0
+        shorts.append(ChannelShort(
+            video_id=vid_id,
+            url=f"https://www.youtube.com/shorts/{vid_id}",
+            title=title,
+            view_count=views,
+            duration_s=dur,
+        ))
+
+    # Sortuj po views malejaco
+    shorts.sort(key=lambda s: s.view_count, reverse=True)
+    log.info("Channel %s: %d shorts found (top: %d views)",
+             target, len(shorts), shorts[0].view_count if shorts else 0)
+    return shorts
+
+
+async def expand_channel(
+    channel_url: str,
+    min_views: int = 500_000,
+    max_per_channel: int = 10,
+    scan_depth: int = 30,
+) -> list[str]:
+    """Z URL kanalu zwroc liste URL-i shortow ktore spelniaja min_views.
+
+    Limit max_per_channel zeby nie wypompowac wszystkiego z jednego kanalu.
+    """
+    shorts = await list_channel_shorts(channel_url, scan_depth=scan_depth)
+    if not shorts:
+        return []
+    viral = [s for s in shorts if s.view_count >= min_views]
+    if not viral:
+        log.warning(
+            "Channel %s: zero shorts >= %d views (top has %d). Lowering threshold or refresh channel.",
+            channel_url, min_views, shorts[0].view_count,
+        )
+        return []
+    selected = viral[:max_per_channel]
+    log.info(
+        "Channel %s: %d shorts >= %d views, taking top %d",
+        channel_url, len(viral), min_views, len(selected),
+    )
+    return [s.url for s in selected]

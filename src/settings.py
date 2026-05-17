@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     scripts_per_day: int = Field(default=3, alias="SCRIPTS_PER_DAY")
     debug: bool = Field(default=False, alias="DEBUG")
 
+    # Channel scraping (Faza 1.5): expand channel URLs -> top shorts by views.
+    channel_min_views: int = Field(default=500_000, alias="CHANNEL_MIN_VIEWS")
+    channel_max_shorts_per_channel: int = Field(default=10, alias="CHANNEL_MAX_SHORTS_PER_CHANNEL")
+    channel_scan_depth: int = Field(default=30, alias="CHANNEL_SCAN_DEPTH")
+
     def has_llm(self) -> bool:
         return bool(self.gemini_api_key or self.groq_api_key)
 

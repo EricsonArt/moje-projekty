@@ -82,27 +82,37 @@ TELEGRAM_CHAT_ID=123456789
 
 ---
 
-## 3. Wypelnienie swipe-file.txt
+## 3. Wypelnienie swipe-file.txt (KANALY, nie pojedyncze filmy)
 
-Edytuj `data/swipe-file.txt` i wklej **min 5 linkow** do viralowych YouTube Shortow PL
-z Twojej niszy (AI / personal brand / passive income / side hustle).
+Edytuj `data/swipe-file.txt` i wklej **min 3 linki do KANALOW YT** z Twojej niszy.
+System sam pobierze z kazdego kanalu top shorty (>= 500k views domyslnie) i z nich
+codziennie wylosuje 3 do inspiracji.
 
-**Jak znalezc dobre linki**:
+**Jak znalezc dobre kanaly**:
 - Idz na YouTube
-- Wpisz w wyszukiwarce: "AI biznes online shorts" / "personal brand polska shorts"
-- Filtruj: Krotki film
-- Posortuj po: Liczba wyswietlen
-- Wez linki ktore maja >50k views
-- Skopiuj URL postaci `https://youtube.com/shorts/XYZ`
+- Wpisz "AI biznes shorts" / "passive income polska" / "personal brand shorts"
+- Wejdz na kilka filmow, klik nazwa kanalu
+- Sprawdz w zakladce "Shorts" czy maja regularnie wideo z 500k+ views
+- Skopiuj URL kanalu postaci `https://www.youtube.com/@nazwa`
 
-**Format pliku**:
+**Format pliku** (1 link na linijke):
 ```
 # komentarz ignorowany
-https://youtube.com/shorts/abc123
-https://youtube.com/shorts/def456
+https://www.youtube.com/@kanal1
+https://www.youtube.com/@kanal2
+https://www.youtube.com/@kanal3
 ```
 
-**Refresh**: zmieniaj liste co 2-3 tygodnie zeby system nie sie nie wpadl w 1 styl.
+**Dostrajanie progu views**:
+- Domyslnie pipeline bierze tylko shorty z **>= 500 000 wyswietlen**.
+- Jezeli kanaly sa mniejsze i pipeline mowi "zero shorts >= 500000 views" -
+  dodaj do .env (lokalnie) lub do GitHub Secrets:
+  ```
+  CHANNEL_MIN_VIEWS=200000
+  ```
+- Mozesz tez podniesc do `1000000` dla ostrzejszej selekcji.
+
+**Refresh**: zmieniaj kanaly co 2-3 tygodnie zeby system nie wpadl w 1 styl.
 
 ---
 
@@ -148,7 +158,7 @@ Mozesz tez recznie:
 | GROQ_API_KEY | TAK (fallback) | console.groq.com/keys |
 | TELEGRAM_BOT_TOKEN | TAK | @BotFather |
 | TELEGRAM_CHAT_ID | TAK | @userinfobot |
-| data/swipe-file.txt z 5+ linkami | TAK | Edycja recznie |
+| data/swipe-file.txt z 3+ linkami do KANALOW YT | TAK | Edycja recznie |
 | yt-dlp w PATH | TAK | `pip install` lub apt |
 | Python 3.11+ | TAK | sprawdz `python3 --version` |
 | YOUTUBE_API_KEY | NIE (Faza 2) | console.cloud.google.com |

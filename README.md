@@ -6,9 +6,10 @@ i prowadzace widza do oferty SaaS-u **Skala** (systemskala.pl).
 
 ## Co to robi w 1 zdaniu
 
-Bierze 5-10 viralowych Shortow YT konkurencji -> analizuje ich wzorce hookow -> generuje
-3 oryginalne skrypty 30-60s z hookiem + body (Hormozi PL) + CTA do pakietu Skala -> wysyla
-ci na Telegram do nagrania talking-head.
+Bierze 3-10 **kanalow YT konkurencji**, automatycznie wyciaga z nich top viralowe Shorty
+(domyslnie >= 500k views), analizuje ich wzorce hookow -> generuje 3 oryginalne skrypty
+30-60s z hookiem + body (Hormozi PL) + CTA do pakietu Skala -> wysyla ci na Telegram do
+nagrania talking-head.
 
 ## Stack (caly darmowy)
 
@@ -22,7 +23,7 @@ ci na Telegram do nagrania talking-head.
 
 1. **Wez darmowe API keys** - patrz [docs/SETUP.md](docs/SETUP.md) krok po kroku (~15 min)
 2. **Wpisz secrets do GitHub Actions** lub `.env` lokalnie
-3. **Wklejaj viralowe Shorty YT do `data/swipe-file.txt`** (min 5, refresh co 2-3 tygodnie)
+3. **Wklejaj linki do KANALOW YT** do `data/swipe-file.txt` (min 3 kanaly, refresh co 2-3 tyg)
 
 Test lokalny:
 ```bash
@@ -57,7 +58,7 @@ Po edycji nie trzeba nic kompilowac - kolejny run pickup'uje zmiany.
 ## Architektura
 
 ```
-data/swipe-file.txt -> yt-dlp scrape + auto-subs
+data/swipe-file.txt (kanaly YT) -> expand: top shorty >=500k views -> yt-dlp scrape + auto-subs
                               |
                               v
                        transcribe (.vtt -> text)

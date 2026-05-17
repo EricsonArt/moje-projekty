@@ -33,7 +33,7 @@ from src.generate.pipeline import (
 )
 from src.llm.router import LLMRouter
 from src.scrape.swipe_file import filter_supported, parse_swipe_file
-from src.scrape.youtube import fetch_many, YoutubeVideo
+from src.scrape.youtube import expand_channel, fetch_many, YoutubeVideo
 from src.settings import DATA_DIR, settings
 from src.transcribe.auto_subs import parse_vtt
 
@@ -148,17 +148,53 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
     links = parse_swipe_file(swipe_file)
     log.info("Swipe file: %d links found", len(links))
     yt_links = filter_supported(links)
-    log.info("YouTube links to process: %d", len(yt_links))
+    channels = [l for l in yt_links if l.kind == "yt_channel"]
+    direct_videos = [l for l in yt_links if l.kind == "yt_video"]
+    log.info(
+        "YouTube inputs: %d channels + %d direct videos",
+        len(channels), len(direct_videos),
+    )
     if not yt_links:
         log.error(
-            "No YouTube links in swipe file. Edit %s with viral Shorts URLs.",
+            "No YouTube links in swipe file. Edit %s with channel URLs (e.g. youtube.com/@nazwa).",
             swipe_file,
         )
         return []
 
+    # 1b. Expand channels -> top viral shorts (>= min_views)
+    expanded_urls: list[str] = [l.url for l in direct_videos]
+    if channels:
+        expansions = await asyncio.gather(*(
+            expand_channel(
+                ch.url,
+                min_views=settings.channel_min_views,
+                max_per_channel=settings.channel_max_shorts_per_channel,
+                scan_depth=settings.channel_scan_depth,
+            )
+            for ch in channels
+        ))
+        for ch, urls in zip(channels, expansions):
+            if not urls:
+                log.warning("Channel %s yielded 0 viral shorts - skipping", ch.url)
+            expanded_urls.extend(urls)
+
+    # Dedup zachowujac kolejnosc
+    seen: set[str] = set()
+    final_urls: list[str] = []
+    for u in expanded_urls:
+        if u not in seen:
+            seen.add(u)
+            final_urls.append(u)
+    log.info("Total viral shorts to fetch: %d (after dedup)", len(final_urls))
+    if not final_urls:
+        log.error(
+            "No viral shorts collected. Check channel URLs in %s or lower CHANNEL_MIN_VIEWS (currently %d).",
+            swipe_file, settings.channel_min_views,
+        )
+        return []
+
     # 2. Fetch + transcribe
-    urls = [l.url for l in yt_links]
-    sources = await _fetch_and_transcribe(urls)
+    sources = await _fetch_and_transcribe(final_urls)
     log.info("Usable sources after transcription: %d", len(sources))
     if not sources:
         log.error("No source videos with usable transcripts - aborting")
