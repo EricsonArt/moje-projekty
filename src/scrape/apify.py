@@ -46,8 +46,13 @@ async def _run_actor_sync(
     run_input: dict,
     timeout: float = APIFY_TIMEOUT,
 ) -> _RunResult:
-    """Wywoluj Apify actor synchronicznie - czekaj na wynik, zwroc dataset."""
-    url = f"{APIFY_BASE}/acts/{actor_id}/run-sync-get-dataset-items"
+    """Wywoluj Apify actor synchronicznie - czekaj na wynik, zwroc dataset.
+
+    UWAGA: actor_id musi byc w formacie 'username~actor-name' (tylda, NIE slash).
+    Slash w URL Apify API jest interpretowany jako separator path - rozbija request.
+    """
+    actor_path = actor_id.replace("/", "~")
+    url = f"{APIFY_BASE}/acts/{actor_path}/run-sync-get-dataset-items"
     params = {"token": _token(), "timeout": int(timeout)}
 
     try:
