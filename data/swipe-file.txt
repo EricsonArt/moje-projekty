@@ -1,0 +1,44 @@
+# Swipe file - linki do KANALOW (lub pojedynczych filmow) ze short formem.
+#
+# JAK TO DZIALA:
+# 1. Z kazdego kanalu pipeline wyciaga top shorty.
+# 2. Dla YT: filtr po wyswietleniach (default >= 500 000).
+# 3. Dla TT/IG: bierze N najnowszych (TT/IG nie eksponuje view_count w listach).
+# 4. Z calej puli losuje 3 codziennie i generuje 3 nowe skrypty.
+# 5. Wysyla na Telegram.
+#
+# === TRYBY DZIALANIA TT/IG (wybierz JEDEN) ===
+#
+# A) APIFY (chmurowy, free $5/mc credit, REKOMENDOWANY dla TT/IG):
+#    -> Dodaj APIFY_TOKEN jako GitHub Secret -> dziala z chmury bez Twojego PC
+#
+# B) COOKIES W SECRETS (chmurowy, 100% darmowy, refresh cookies raz na 1-2 tyg):
+#    -> Wyeksportuj cookies z przegladarki -> wklej zawartosc jako TIKTOK_COOKIES
+#       i INSTAGRAM_COOKIES w GitHub Secrets -> dziala z chmury
+#
+# C) COOKIES LOKALNIE (Twoj PC, 100% darmowy):
+#    -> patrz docs/SETUP-WINDOWS.md i START.bat
+#
+# === Twoje kanaly ===
+
+# TikTok (Eryk - twoje wybory):
+https://www.tiktok.com/@danvmartell
+https://www.tiktok.com/@soprano_marketing
+https://www.tiktok.com/@www.dawidpiatkowski.com
+https://www.tiktok.com/@personalbrandlaunch0
+https://www.tiktok.com/@jun_yuh
+https://www.tiktok.com/@mino.mp4
+
+# Instagram - dodaj swoje gdy bedziesz wiedzial ze IG dziala:
+# https://www.instagram.com/PRZYKLAD_IG_1
+
+# YouTube fallback - usun ten blok jak nie chcesz YT:
+# (Bezpieczne kanaly polskie z viralowymi shortami - generuje skrypty nawet jak TT/IG nie wypali)
+https://www.youtube.com/@MateuszGrzesiak
+https://www.youtube.com/@KasiaGandor
+https://www.youtube.com/@pawelopydo
+
+# === Notatki ===
+# - Jak TT nie zwraca filmow ("Cookies expired" / "Login required") - patrz tryb A lub B powyzej
+# - Jak YT mowi "zero shorts >= 500000 views" - obniz w GitHub Repository Variables: CHANNEL_MIN_VIEWS=100000
+# - Wymieniaj kanaly co 2-3 tygodnie zeby system nie wpadl w 1 styl
