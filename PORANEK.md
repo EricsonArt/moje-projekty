@@ -1,104 +1,119 @@
-# DZIEN DOBRY ERYK - czytaj to pierwsze rano
+# DZIEN DOBRY ERYK - status systemu rano
 
-System jest gotowy. Stan na rano (przygotowane noca):
+System dziala. Wczoraj wygenerowal pierwsze 3 skrypty (sprawdz scripts/2026-05-18/).
+Przez noc dodalem **wszystkie 5 faz z listy C** (suwaki, panel, multi-platform, trending, ratings).
 
-## Co dziala juz teraz (bez Twojego klikniecia)
+## Co dziala JUZ TERAZ (bez Twojego klikniecia)
 
-- **YouTube z chmury** = pelnia gotowe. Wystarczy odpalic workflow recznie - sprawdz Telegram za 5 min.
-- **Sekrety**: GEMINI, GROQ, TELEGRAM tokens - masz dodane
-- **Kanaly w swipe-file**: 6 TT (Twoje wybory) + 3 YT (backup zeby cos zaskoczylo)
+✅ **Pipeline z Apify dla TT** - 6 Twoich TT kanalow scrape'owanych co dzien rano
+✅ **Cron 05:00 UTC** - codzienne automatyczne uruchamianie (poniedzialek-niedziela)
+✅ **6 suwakow w preferences** - edytujesz `config/preferences.yaml` na repo, pipeline czyta przy nastepnym runie
+✅ **Telegram delivery** - 3 skrypty na Telegram (trafia rano)
+✅ **Critic loop** - max 3-5 iteracji per skrypt z auto-poprawkami
+✅ **Multi-platform output** - opcjonalnie 3 wersje per skrypt (TT/Reels/Shorts), toggle w preferences
+✅ **Ratings learning** - jak ocenisz skrypty 👍/👎, system uczy sie czego unikac
+✅ **Trending hooks** - opcjonalnie codziennie analiza top viralowych hookow z konkurencji
 
-## Co NIE dziala bez Twojego dzialania
+## Co wymaga TWOJEGO klikniecia (15-20 min jednorazowo)
 
-- **TikTok i Instagram** - wymaga JEDNEJ z 3 opcji ponizej. Pipeline pominie TT/IG i polecisz z YT, dopoki nie wybierzesz.
+### KROK 1: Wdroz Web Panel na Vercel (~10 min)
 
----
+Panel pozwala edytowac suwaki + kliknac "Wygeneruj teraz" + zobaczyc skrypty z historii.
 
-## Wybierz jedna z 3 opcji dla TT/IG
+1. Otworz: **https://vercel.com/new**
+2. Zaloguj sie (Github login - to samo konto co repo)
+3. Klik **"Import Git Repository"** -> wybierz **EricsonArt/moje-projekty**
+4. WAZNE: **"Root Directory"** -> klik **"Edit"** -> wpisz: **`panel`** (NIE main, NIE root!)
+5. Sekcja **"Environment Variables"** - dodaj 3:
+   - `GITHUB_TOKEN` = stworz go na: https://github.com/settings/tokens/new?scopes=repo,workflow&description=Skala%20Viral%20Panel
+     (zaznacz scope: **repo** i **workflow**, klik "Generate token", skopiuj ghp_...)
+   - `PANEL_PIN` = wymysl 4-6 cyfrowy PIN (np. `1234`)
+   - `RATING_TOKEN` = wymysl losowy string 32 znakow (np. `xQ7vKj9mLpN3rF8sA2dH5gT6yU4eR1wB`)
+6. Klik **"Deploy"**
+7. Po 2 min Vercel da Ci URL typu **`https://moje-projekty-xxx.vercel.app`** - skopiuj go
 
-### Opcja A: APIFY (zalecane - chmura, ~2 min Twojej pracy)
+### KROK 2: Dodaj URL panelu do GitHub Secrets/Variables (~2 min)
 
-**Plus**: dziala z chmury, bez Twojego PC, Apify sam ogarnia TT/IG ze swojej infrastruktury (nie banuje)
-**Minus**: rejestracja na zewnetrznym serwisie. Free $5 kredytow/mc - dla Ciebie wystarczy spokojnie (~10k filmow/mc darmowo)
+Zeby Telegram dodawal linki w wiadomosciach (👍/👎/Edytuj):
 
-Kroki:
-1. Otworz: **https://console.apify.com/sign-up?asrc=developers**
-2. Zarejestruj sie przez Google (najszybciej)
-3. Po zalogowaniu: **https://console.apify.com/account/integrations** -> Twoj API token jest na gorze. Kliknij oczko zeby pokazac, skopiuj.
-4. Dodaj jako secret w GitHubie: **https://github.com/EricsonArt/moje-projekty/settings/secrets/actions/new**
-   - Name: `APIFY_TOKEN`
-   - Secret: wklej token
-5. Odpal workflow: **https://github.com/EricsonArt/moje-projekty/actions/workflows/daily.yml** -> Run workflow (branch: `claude/viral-content-system-0Ksu3`)
+1. https://github.com/EricsonArt/moje-projekty/settings/secrets/actions/new
+   - Name: **`RATING_TOKEN`**
+   - Value: **dokladnie ta sama wartosc co w Vercel** (np. `xQ7vKj9mLpN3rF8sA2dH5gT6yU4eR1wB`)
+   - Klik "Add secret"
 
-**Po 5 min: skrypty z TT/IG/YT na Telegramie.**
+2. https://github.com/EricsonArt/moje-projekty/settings/variables/actions/new
+   - Name: **`PANEL_URL`**
+   - Value: URL z Vercel (np. `https://moje-projekty-xxx.vercel.app`)
+   - Klik "Add variable"
 
----
+### KROK 3: Test panelu (~3 min)
 
-### Opcja B: COOKIES W SECRETS (chmura, 100% darmowe, ale refresh co 1-2 tyg)
+1. Otworz URL z Vercel
+2. Wpisz PIN -> wchodzisz w panel
+3. Zobaczysz 6 suwakow + przycisk "Wygeneruj teraz" + liste skryptow
+4. Klik **"🚀 Wygeneruj teraz"** -> workflow startuje
+5. Czekaj 3-5 min, sprawdz Telegram - teraz wiadomosci powinny miec **buttony 👍/👎/Edytuj** na dole
 
-**Plus**: zero kosztow, dziala z chmury
-**Minus**: Twoje cookies na GitHubie (zaszyfrowane, ale jednak), trzeba refresh co tydzien-dwa
+## Co masz w panelu
 
-Kroki:
-1. W Chrome zainstaluj rozszerzenie **"Get cookies.txt LOCALLY"** (TYLKO z LOCALLY w nazwie!):
-   https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc
-2. Wejdz na **tiktok.com** zalogowany -> klik ikonke rozszerzenia (gora prawo) -> "Export As" -> "Netscape" -> pobiera plik
-3. **Otworz pobrany plik w Notatniku, zaznacz wszystko (Ctrl+A), skopiuj (Ctrl+C)**
-4. Dodaj jako secret: **https://github.com/EricsonArt/moje-projekty/settings/secrets/actions/new**
-   - Name: `TIKTOK_COOKIES`
-   - Secret: wklej zawartosc (Ctrl+V)
-5. Powtorz dla Instagrama (wejdz instagram.com zalogowany, eksport, wklej jako `INSTAGRAM_COOKIES`)
-6. Odpal workflow: https://github.com/EricsonArt/moje-projekty/actions/workflows/daily.yml -> Run workflow
+### Suwaki
 
-REKOMENDACJA: zaloz drugie konto TT/IG (5 min na telefonie), zaloguj sie nim w przegladarce, jego cookies daj systemowi. Twoje glowne konto bezpieczne.
+| Suwak | Zakres | Default | Co robi |
+|---|---|---|---|
+| Ilość skryptów | 1-10 | 3 | Ile skryptów na 1 run |
+| **Intensywność CTA** | 0-100% | 30% | 0=pure value, 100=hard sell |
+| **Podobieństwo do inspiracji** | 0-100% | 40% | 0=oryginał, 100=klon |
+| **Effort level** | 1-10 | 6 | 1-4=fast, 5-7=std, 8-10=thorough (multi-attempt z 3 kandydatów) |
+| Długość filmu | 15-90s | 45s | Target sec/word count |
+| Ton | dropdown | balanced | anti_guru/hormozi/storyteller/kontrarian/balanced |
 
----
+### Buttony w Telegramie (po setup panelu)
 
-### Opcja C: LOKALNIE NA PC (twoj komputer, 100% darmowe, 15 min)
+Pod każdym skryptem na Telegramie:
+- **👍 Świetne** → click → system pamięta że ten hook+styl Ci pasuje → next gen używa go jako wzorzec
+- **👎 Słabe** → click → system uczy się czego unikać
+- **⚙️ Edytuj preferencje** → otwiera panel z suwakami
 
-Patrz `DZISIAJ.md` - START.bat robi wszystko sam, prowadzi za reke.
+Pod summary (gora wiadomosci):
+- **🚀 Wygeneruj kolejne** → trigger workflow z chmury
+- **⚙️ Suwaki** → otwiera panel
 
----
+### Toggle features (edytuj w preferences.yaml lub przez panel jutro)
 
-## Jak nie wybierzesz nic = workflow odpali sie z samym YT
+- `multi_platform.enabled: true` → generator robi 3 wersje per skrypt (TT 30s, Reels 45s, Shorts 60s) z różnymi hashtagami
+- `trending_hooks.enabled: true` → rano pojawia się dodatkowa wiadomość z top 5 viralowych hooków z konkurencji
+- `ratings.use_history_in_prompts: true` → ratings wpływają na generację (default ON)
 
-Cron jest skonfigurowany na codziennie 5 UTC (06/07 PL). Z samych YT kanalow dostaniesz 3 skrypty kazdego dnia.
+## Status checklist
 
-## Pierwszy test TERAZ
+- [x] System pipeline TT (Apify) - dziala z chmury, codziennie 05:00 UTC
+- [x] Suwaki w config/preferences.yaml - dziala
+- [x] Web Panel kod gotowy w panel/ - wdroz na Vercel (krok 1 wyzej)
+- [x] Inline buttons w Telegram - aktywne po setup PANEL_URL (krok 2)
+- [x] Multi-platform output - kod gotowy, toggle w preferences
+- [x] Trending hooks - kod gotowy, toggle w preferences
+- [x] Ratings learning - aktywne automatycznie, jak klikasz 👍/👎
+- [ ] Wdroz panel na Vercel (KROK 1) - musisz Ty
+- [ ] Dodaj PANEL_URL + RATING_TOKEN do GitHub (KROK 2) - musisz Ty
+- [ ] Test panel + buttony (KROK 3)
 
-Po wybraniu opcji (A/B/C) wejdz na:
-**https://github.com/EricsonArt/moje-projekty/actions/workflows/daily.yml**
+## Uczciwe ostrzezenia
 
-Klik **"Run workflow"** (po prawej) -> Branch: `claude/viral-content-system-0Ksu3` -> zielony **"Run workflow"**.
+1. **Token Telegram bota ktory mi pokazales jest "spalony"** - kiedys (dzisiaj/jutro) zrob `/revoke` w BotFather, wygeneruj nowy, zaktualizuj secret w repo.
+2. **GITHUB_TOKEN** ktory wygenerujesz dla Vercel - **nie share'uj** nikomu. Jest scope'owany do tego repo, ale dalej daje pelen dostep. Ja go nie potrzebuje znac.
+3. **Apify free credit $5/mc** - jak skonczysz, workflow zacznie zwracac 402 Payment Required. Sprawdz: https://console.apify.com/billing - aktualnie wystarczy spokojnie na codzienny scrape 6 TT kanalow.
 
-Czekaj 3-5 min. Sprawdz Telegrama.
+## Jak cos nie dziala
 
-## Jak cos nie zadziala
+1. Workflow padl - https://github.com/EricsonArt/moje-projekty/actions
+2. Klik na ostatni run -> "generate" -> step z czerwonym X -> przeczytaj logi
+3. Najczestsze przyczyny w "Common issues" sekcji w `docs/SETUP.md`
+4. Albo wyslij mi screen logow - zfixuje
 
-1. Wejdz na zakladce Actions -> klik na ostatni run -> zobacz logi
-2. Pisz do Claude'a (web) ze screenshotem bledu - zdiagnozuje
-3. Workflow tez wysle Ci alert na Telegram jak padnie
+## Co dalej
 
----
+System teraz **uczy sie z Twoich ratingow**. Im wiecej 👍/👎 dasz, tym lepsze skrypty.
+Po 2-3 tygodniach mozesz zobaczyc co dziala (folder `scripts/`), zaktualizowac kanaly w
+swipe-file, dodac IG kanaly, podniesc effort_level do 8 dla weekendowych "premium" gen runs.
 
-## Status checklist (sprawdz na zimno)
-
-- [x] Kod scraperow gotowy (TT/IG przez Apify lub cookies)
-- [x] Workflow GitHub Actions hardened (preflight checks, friendly errors)
-- [x] Cron skonfigurowany na codziennie 5 UTC
-- [x] Sekrety GEMINI, GROQ, TELEGRAM masz dodane
-- [x] swipe-file ma 9 aktywnych linkow (6 TT + 3 YT backup)
-- [ ] Wybrales opcje A/B/C dla TT/IG
-- [ ] Odpaliles pierwszy workflow recznie
-
-## Jak chcesz wlaczyc auto-cron codziennie
-
-Cron jest aktywny TYLKO gdy kod jest w branchu `main`. Aktualnie jest na `claude/viral-content-system-0Ksu3`.
-
-Zeby wlaczyc cron:
-1. Otworz PR: **https://github.com/EricsonArt/moje-projekty/compare/main...claude/viral-content-system-0Ksu3**
-2. Klik "Create pull request" -> "Create pull request"
-3. Na PR klik "Merge pull request" -> "Confirm merge"
-4. Od jutra rano cron sam ruszy o 05:00 UTC
-
-Ale najpierw odpal workflow recznie raz - upewnij sie ze dziala zanim wlaczysz auto.
+Powodzenia z nagrywaniem! 🎬
