@@ -136,6 +136,7 @@ def _build_generation_prompt(
     source: YoutubeVideo,
     source_transcript: str,
     hook_variant: dict,
+    preferences=None,
 ) -> str:
     voice = configs["user_voice"]
     product = configs["product"]
@@ -183,6 +184,34 @@ def _build_generation_prompt(
 
     angle_note = f"\nSPECJALNY ANGLE dzisiejszy: {topic.angle}" if topic.angle else ""
 
+    # === DYNAMIC PREFERENCES BLOCK (suwaki z config/preferences.yaml) ===
+    if preferences is not None:
+        target_sec = preferences.target_seconds
+        # tempo PL ~2.5 slowa/s -> approximate word count
+        target_words_min = int(target_sec * 2.0)
+        target_words_max = int(target_sec * 3.0)
+        preferences_block = f"""
+=== SUWAKI ERYKA (TWARDE PREFERENCJE) ===
+
+[CTA intensity: {preferences.cta_intensity}/100]
+{preferences.cta_instruction_for_prompt()}
+
+[Copy similarity: {preferences.copy_similarity}/100]
+{preferences.copy_instruction_for_prompt()}
+
+[Ton: {preferences.tone}]
+{preferences.tone_instruction_for_prompt()}
+
+[Dlugosc docelowa: {target_sec}s = {target_words_min}-{target_words_max} slow]
+"""
+        # Override length rule below
+        length_rule = f"Total: {target_words_min}-{target_words_max} slow ({target_sec}s mowione)."
+        hashtag_count_rule = f"Hashtagi: {preferences.hashtags.count}, mix PL+EN"
+    else:
+        preferences_block = ""
+        length_rule = "Total: 75-150 slow (30-60s mowione)."
+        hashtag_count_rule = "Hashtagi: 15-20, mix PL+EN"
+
     prompt = f"""Jestes copywriterem viralowych shortow PL dla Eryka Hajduczka (840k+ YT, 36k+ TT),
 zalozyciela SaaS-u "Skala" (systemskala.pl). Twoj output zostanie nagrany przez Eryka jako
 talking-head wideo (mowi do kamery, 30-60s).
@@ -207,6 +236,8 @@ Szczegolowy opis: {topic.usp_data['long']}
 
 {package_block}
 {angle_note}
+
+{preferences_block}
 
 ---
 
@@ -236,7 +267,7 @@ STRUKTURA SKRYPTU (Hormozi PL):
 [4] PATTERN INTERRUPT - 1 krotkie zdanie lamiace tempo
 [5] CTA - max 25 slow, zgodnie z instrukcja powyzej
 
-Total: 75-150 slow (30-60s mowione).
+{length_rule}
 
 ---
 
@@ -246,7 +277,7 @@ REGULY TWARDE (auto-fail):
 - ZERO kalki z angielskiego ("pozwol mi", "tutaj jest", "spojrz na to")
 - ZERO pytania retorycznego bez payoffu
 - Liczby w CTA TYLKO z configu (nie zmysl ceny)
-- Hashtagi: 15-20, mix PL+EN
+- {hashtag_count_rule}
 
 ---
 
@@ -281,10 +312,12 @@ async def generate_one_script(
     source_transcript: str,
     hook_variant: dict,
     temperature: float = 0.85,
+    preferences=None,
 ) -> dict:
-    prompt = _build_generation_prompt(configs, topic, source, source_transcript, hook_variant)
+    prompt = _build_generation_prompt(
+        configs, topic, source, source_transcript, hook_variant, preferences,
+    )
     parsed, _resp = await router.call_json(prompt, temperature=temperature, max_tokens=2400)
     if isinstance(parsed, list):
-        # LLM sometimes wraps in array - take first
         parsed = parsed[0] if parsed else {}
     return parsed

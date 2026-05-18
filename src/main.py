@@ -32,6 +32,7 @@ from src.generate.pipeline import (
     pick_topic_for_today,
 )
 from src.llm.router import LLMRouter
+from src.preferences import Preferences, load_preferences
 from src.scrape.apify import (
     apify_available,
     apify_instagram_videos,
@@ -111,20 +112,24 @@ async def _generate_one_with_critic(
     source_transcript: str,
     hook_variant: dict,
     script_idx: int,
+    preferences: Preferences,
 ) -> dict | None:
-    """Generuje skrypt, krytykuje, regeneruje max MAX_CRITIC_ITERATIONS razy."""
+    """Generuje skrypt, krytykuje, regeneruje wg effort_level z preferences."""
     banned = configs["user_voice"]["banned_phrases"]
     persona_name = topic.persona_data["name"]
 
     best_script: dict | None = None
     best_verdict = None
+    max_iter = preferences.effort.critic_iterations
+    base_temp = preferences.effort.temperature
 
-    for iteration in range(1, MAX_CRITIC_ITERATIONS + 1):
-        # Pierwsza próba - normalna; kolejne - wyższa temperatura, fresh hook
-        temp = 0.85 if iteration == 1 else 0.95
+    for iteration in range(1, max_iter + 1):
+        # Pierwsza temp z effort, kolejne lekko wyzsze
+        temp = base_temp if iteration == 1 else min(0.99, base_temp + 0.05 * (iteration - 1))
         try:
             script = await generate_one_script(
-                router, configs, topic, source, source_transcript, hook_variant, temperature=temp,
+                router, configs, topic, source, source_transcript, hook_variant,
+                temperature=temp, preferences=preferences,
             )
         except Exception as e:
             log.error("Script %d iter %d generation failed: %s", script_idx, iteration, e)
@@ -163,7 +168,7 @@ async def _generate_one_with_critic(
     # Wszystkie iteracje wyczerpane - graceful degradation
     if best_script:
         best_script["critic_scores"] = best_verdict.scores if best_verdict else {}
-        best_script["iterations"] = MAX_CRITIC_ITERATIONS
+        best_script["iterations"] = max_iter
         best_script["critic_warning"] = (
             best_verdict.specific_fix if best_verdict else "Critic failed - manual review needed"
         )
@@ -180,6 +185,13 @@ async def _generate_one_with_critic(
 async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -> list[dict]:
     configs = load_configs()
     log.info("Configs loaded: product, icp, user_voice, niche_keywords")
+
+    # 0. Wczytaj preferences - sterowniki generacji edytowalne przez Web Panel
+    preferences = load_preferences()
+    # scripts_per_day z argumentu (CLI) ma priorytet, jak default to bierzemy z preferences
+    if scripts_per_day == settings.scripts_per_day:
+        scripts_per_day = preferences.scripts_per_run
+        log.info("Uzywam scripts_per_run=%d z preferences.yaml", scripts_per_day)
 
     # 1. Read swipe file
     links = parse_swipe_file(swipe_file)
@@ -359,7 +371,9 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
     for i, variant in enumerate(variants, 1):
         source, transcript = random.choice(sources)
         tasks.append(
-            _generate_one_with_critic(router, configs, topic, source, transcript, variant, i)
+            _generate_one_with_critic(
+                router, configs, topic, source, transcript, variant, i, preferences,
+            )
         )
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -383,6 +397,13 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
         r["package_id"] = topic.package_id
         r["source_url"] = source_used.url
         r["source_title"] = source_used.title
+        r["preferences_snapshot"] = {
+            "cta_intensity": preferences.cta_intensity,
+            "copy_similarity": preferences.copy_similarity,
+            "effort_level": preferences.effort_level,
+            "target_seconds": preferences.target_seconds,
+            "tone": preferences.tone,
+        }
         scripts.append(r)
 
     log.info("Generated %d scripts (out of %d requested)", len(scripts), scripts_per_day)
