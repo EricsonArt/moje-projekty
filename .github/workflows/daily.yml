@@ -36,6 +36,9 @@ jobs:
       INSTAGRAM_COOKIES_CONTENT: ${{ secrets.INSTAGRAM_COOKIES }}
       # Apify (opcjonalne - jak ustawione, social.py uzyje Apify zamiast yt-dlp+cookies)
       APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+      # Panel webowy (Vercel) - dla linkow w wiadomosciach Telegram
+      PANEL_URL: ${{ vars.PANEL_URL }}
+      RATING_TOKEN: ${{ secrets.RATING_TOKEN }}
       SCRIPTS_PER_DAY: "3"
       CHANNEL_MIN_VIEWS: ${{ vars.CHANNEL_MIN_VIEWS || '100000' }}
       PYTHONUNBUFFERED: "1"

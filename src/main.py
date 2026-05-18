@@ -32,7 +32,9 @@ from src.generate.pipeline import (
     pick_topic_for_today,
 )
 from src.llm.router import LLMRouter
+from src.multiplatform import fan_out_to_platforms
 from src.preferences import Preferences, load_preferences
+from src.trending import classify_hooks_with_llm, format_trending_for_telegram
 from src.scrape.apify import (
     apify_available,
     apify_instagram_videos,
@@ -363,6 +365,20 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
         today, topic.persona_id, topic.usp_id, topic.package_id, topic.cta_severity, topic.angle,
     )
 
+    # 3b. Trending hooks (opcjonalne - jak enabled w preferences)
+    trending_message = ""
+    if preferences.trending_hooks.enabled:
+        all_videos = [src for src, _ in sources]
+        try:
+            router_for_trending = LLMRouter()
+            trending = await classify_hooks_with_llm(
+                router_for_trending, all_videos, top_n=preferences.trending_hooks.daily_count,
+            )
+            trending_message = format_trending_for_telegram(trending)
+            log.info("Trending hooks: %d wzorcow ekstraktowanych", len(trending))
+        except Exception as e:
+            log.warning("Trending hooks generation failed: %s", e)
+
     # 4. Generate N scripts (jeden hook variant per skrypt)
     router = LLMRouter()
     variants = random.sample(HOOK_VARIANTS, k=min(scripts_per_day, len(HOOK_VARIANTS)))
@@ -404,9 +420,17 @@ async def run_pipeline(swipe_file: Path, scripts_per_day: int, today: dt.date) -
             "target_seconds": preferences.target_seconds,
             "tone": preferences.tone,
         }
-        scripts.append(r)
+        # Multi-platform fan-out (jak wlaczone w preferences)
+        if preferences.multi_platform.enabled and preferences.multi_platform.platforms:
+            variants = fan_out_to_platforms(r, preferences.multi_platform.platforms)
+            scripts.extend(variants)
+        else:
+            scripts.append(r)
 
     log.info("Generated %d scripts (out of %d requested)", len(scripts), scripts_per_day)
+    # Attach trending message do pierwszego skryptu jako metadata - main() wysle osobno
+    if trending_message and scripts:
+        scripts[0]["_trending_message"] = trending_message
     return scripts
 
 
@@ -457,6 +481,15 @@ def main():
 
     # Send to Telegram unless disabled
     if not args.no_telegram and settings.has_telegram():
+        # Trending message (jak attached do scripts[0])
+        trending = scripts[0].pop("_trending_message", "") if scripts else ""
+        if trending:
+            from src.deliver.telegram_bot import _send  # private but reusable
+            import httpx
+            async def _send_trending():
+                async with httpx.AsyncClient(timeout=30.0) as c:
+                    await _send(c, trending)
+            asyncio.run(_send_trending())
         asyncio.run(deliver_scripts(scripts, today_str))
     elif args.no_telegram:
         log.info("--no-telegram flag set, skipping delivery")

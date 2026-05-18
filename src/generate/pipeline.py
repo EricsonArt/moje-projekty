@@ -17,8 +17,9 @@ from typing import Any
 import yaml
 
 from src.llm.router import LLMRouter
+from src.ratings import load_ratings, summarize_for_prompt
 from src.scrape.youtube import YoutubeVideo
-from src.settings import CONFIG_DIR, PROMPTS_DIR
+from src.settings import CONFIG_DIR, PROMPTS_DIR, SCRIPTS_DIR
 
 log = logging.getLogger(__name__)
 
@@ -184,6 +185,17 @@ def _build_generation_prompt(
 
     angle_note = f"\nSPECJALNY ANGLE dzisiejszy: {topic.angle}" if topic.angle else ""
 
+    # === RATINGS HISTORY (uczenie sie z 👍/👎 user'a) ===
+    ratings_block = ""
+    if preferences is not None and preferences.ratings.enabled and preferences.ratings.use_history_in_prompts:
+        try:
+            ratings = load_ratings()
+            summary = summarize_for_prompt(ratings, SCRIPTS_DIR, limit=5)
+            if summary:
+                ratings_block = f"\n=== UCZENIE SIE Z RATINGOW ERYKA ===\n{summary}\n"
+        except Exception as e:
+            log.warning("Failed to load ratings for prompt: %s", e)
+
     # === DYNAMIC PREFERENCES BLOCK (suwaki z config/preferences.yaml) ===
     if preferences is not None:
         target_sec = preferences.target_seconds
@@ -238,6 +250,7 @@ Szczegolowy opis: {topic.usp_data['long']}
 {angle_note}
 
 {preferences_block}
+{ratings_block}
 
 ---
 
