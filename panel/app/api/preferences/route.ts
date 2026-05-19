@@ -18,6 +18,9 @@ export async function GET() {
     const { prefs } = await getPreferences();
     return NextResponse.json({ ok: true, preferences: prefs });
   } catch (e: any) {
+    if (e.message?.includes("GITHUB_TOKEN")) {
+      return NextResponse.json({ ok: true, preferences: DEFAULT_PREFS, noToken: true });
+    }
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
 }
@@ -39,6 +42,12 @@ export async function POST(req: NextRequest) {
     await savePreferences(merged);
     return NextResponse.json({ ok: true, preferences: merged });
   } catch (e: any) {
+    if (e.message?.includes("GITHUB_TOKEN")) {
+      return NextResponse.json(
+        { ok: false, error: "Dodaj GITHUB_TOKEN w Vercel env vars zeby zapisac zmiany." },
+        { status: 503 }
+      );
+    }
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
 }

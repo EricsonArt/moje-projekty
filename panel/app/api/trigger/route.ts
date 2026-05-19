@@ -13,6 +13,12 @@ export async function POST(req: NextRequest) {
     await triggerWorkflow(body?.skip_telegram === true);
     return NextResponse.json({ ok: true });
   } catch (e: any) {
+    if (e.message?.includes("GITHUB_TOKEN")) {
+      return NextResponse.json(
+        { ok: false, error: "Dodaj GITHUB_TOKEN w Vercel env vars zeby triggerowac runy." },
+        { status: 503 }
+      );
+    }
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
 }
@@ -36,6 +42,9 @@ export async function GET() {
         : null,
     });
   } catch (e: any) {
+    if (e.message?.includes("GITHUB_TOKEN")) {
+      return NextResponse.json({ ok: true, run: null, noToken: true });
+    }
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
 }

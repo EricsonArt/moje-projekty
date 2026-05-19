@@ -18,6 +18,9 @@ export async function GET(req: NextRequest) {
     const days = await listScripts(7);
     return NextResponse.json({ ok: true, days });
   } catch (e: any) {
+    if (e.message?.includes("GITHUB_TOKEN")) {
+      return NextResponse.json({ ok: true, days: [], noToken: true });
+    }
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
 }

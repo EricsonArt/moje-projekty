@@ -48,6 +48,7 @@ export default function Home() {
   const [latestRun, setLatestRun] = useState<any>(null);
   const [scripts, setScripts] = useState<{ date: string; files: string[] }[]>([]);
   const [openScript, setOpenScript] = useState<{ date: string; file: string; content: string } | null>(null);
+  const [noToken, setNoToken] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth").then((r) => r.json()).then((d) => setAuthed(d.authed));
@@ -57,12 +58,15 @@ export default function Home() {
     if (!authed) return;
     fetch("/api/preferences").then((r) => r.json()).then((d) => {
       if (d.ok) setPrefs(d.preferences);
+      if (d.noToken) setNoToken(true);
     });
     fetch("/api/trigger").then((r) => r.json()).then((d) => {
       if (d.ok) setLatestRun(d.run);
+      if (d.noToken) setNoToken(true);
     });
     fetch("/api/scripts").then((r) => r.json()).then((d) => {
       if (d.ok) setScripts(d.days);
+      if (d.noToken) setNoToken(true);
     });
   }, [authed]);
 
@@ -158,6 +162,26 @@ export default function Home() {
           Wyloguj
         </button>
       </header>
+
+      {noToken && (
+        <section className="bg-amber-950/40 border border-amber-700 rounded-2xl p-4 sm:p-5 text-sm space-y-2">
+          <div className="font-bold text-amber-300">⚠️ Tryb podgladu — zmiany sie nie zapisuja</div>
+          <p className="text-amber-100/90">
+            Zeby panel zapisywal preferencje i triggerowal generowanie, dodaj <code className="bg-black/40 px-1.5 py-0.5 rounded">GITHUB_TOKEN</code> w Vercel env vars.
+          </p>
+          <ol className="text-amber-100/80 list-decimal pl-5 space-y-1">
+            <li>
+              <a className="text-amber-300 underline" href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=Skala+Panel" target="_blank" rel="noreferrer">Wygeneruj token w GitHub ↗</a> → kopiuj <code>ghp_...</code>
+            </li>
+            <li>
+              <a className="text-amber-300 underline" href="https://vercel.com/hajduczekeryk-1015s-projects/moje-projekty/settings/environment-variables" target="_blank" rel="noreferrer">Vercel env vars ↗</a> → "Add New" → Key: <code>GITHUB_TOKEN</code>, Value: wklej token
+            </li>
+            <li>
+              <a className="text-amber-300 underline" href="https://vercel.com/hajduczekeryk-1015s-projects/moje-projekty/deployments" target="_blank" rel="noreferrer">Deployments ↗</a> → 3 kropki → "Redeploy"
+            </li>
+          </ol>
+        </section>
+      )}
 
       {/* === Status workflow === */}
       <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-3">
