@@ -1,83 +1,30 @@
 # Preferences - sterowniki generatora skryptow.
-#
-# Ten plik jest edytowalny:
-# 1. Bezposrednio na GitHubie (UI edycji)
-# 2. Przez Web Panel (Vercel app - link w wiadomosciach Telegram)
-# 3. Lokalnie przez Notatnik
-#
-# Po edycji wystarczy commit - nastepny run pipeline'u przeczyta nowe wartosci.
+# Edytowane przez Web Panel: 2026-05-19T20:25:31.648Z
+# Po commitcie pipeline w kolejnym uruchomieniu uzyje nowych wartosci.
 
-# === Suwaki sterujace generacja ===
-
-# Ile skryptow generujemy w jednym uruchomieniu (1-10).
 scripts_per_run: 3
-
-# Jak bardzo skrypt promuje Skale vs daje czysta wartosc (0-100).
-#   0   = pure value, edukacja, zero sprzedazy (build trust)
-#   30  = balans (default) - wartosc + soft CTA
-#   70  = mocna promocja - hard sell, scarcity, wyrazne CTA
-#   100 = pure ad - kazde zdanie sprzedaje
-cta_intensity: 30
-
-# Jak bardzo skrypt klonuje strukture inspiracyjnego filmu (0-100).
-#   0   = pure original - wlasna struktura, viral tylko jako kontekst tematu
-#   40  = subtelna inspiracja (default) - wykorzysta wzorzec hooka ale wlasne body
-#   80  = mocna inspiracja - bliska struktura, podobny tempo i pattern
-#   100 = klon - prawie 1:1, tylko podmiana words pod Eryka
-copy_similarity: 40
-
-# Effort level - jak bardzo AI ma sie postarac (1-10).
-# Im wyzej, tym wieksza jakosc, ale dluzszy czas i (potencjalnie) wieksze koszty Apify.
-#   1-4  = szybkie (1 iter critic, temp 0.7, ~30s per skrypt)
-#   5-7  = standard (3 iter critic, temp 0.85, ~60s per skrypt) - default
-#   8-10 = max (5 iter critic, temp 0.95, multi-attempt z 3 kandydatow, ~3-5min per skrypt)
-effort_level: 6
-
-# Docelowa dlugosc filmu w sekundach (15-90).
-target_seconds: 45
-
-# Ton/styl skryptu. Dostepne wartosci:
-#   - "anti_guru"   - bezposredni, demaskuje BS, kontrarian (default)
-#   - "hormozi"     - struktura agitate-solve-CTA, mocno biznesowo
-#   - "storyteller" - osobiste historie, emocje, mniej "sprzedazowy"
-#   - "kontrarian"  - kazda teza odwraca standardowe mysli
-#   - "balanced"    - mix wszystkich, AI sam decyduje per skrypt
+cta_intensity: 20
+copy_similarity: 80
+effort_level: 10
+target_seconds: 40
 tone: balanced
-
-# === Customizacja generacji ===
-
-# Hashtagi: ile, jaki mix
 hashtags:
   count: 18
   mix:
-    niche: 0.5         # 50% niszowych (#ai, #biznesonline)
-    broad: 0.3         # 30% szerokich (#foryou, #fyp)
-    branded: 0.2       # 20% wlasnych (#skala, #eryk_hajduczek)
-
-# === Multi-platform output ===
-# Czy generowac rozne wersje dla TT/Reels/Shorts (rozne dlugosci, hashtagi)
+    niche: 0.5
+    broad: 0.3
+    branded: 0.2
 multi_platform:
-  enabled: false       # Faza D - jeszcze nie aktywne
+  enabled: false
   platforms:
-    - tiktok           # 30s, hashtagi TT-friendly
-    - instagram        # 45s, hashtagi IG
-    - youtube_shorts   # 60s, hashtagi YT
-
-# === Rating system ===
-# Jak user ocenia skrypty na Telegramie (👍/👎)
-# Wplywa na uczenie sie kolejnych generacji.
+    - tiktok
 ratings:
-  enabled: true        # Faza C
-  use_history_in_prompts: true   # negatywne ratings -> "nie generuj tego typu hookow"
-
-# === Trending hooks (Faza E) ===
+  enabled: true
+  use_history_in_prompts: true
 trending_hooks:
   enabled: false
-  daily_count: 5       # ile wzorcow viralowych wysyla rano na Telegram
-
-# === Multi-niche (Faza E) ===
-# Mozesz miec rozne pakiety/USP dla roznych nisz (np. Skala + drugi biznes)
+  daily_count: 5
 multi_niche:
   enabled: false
   active_niches:
-    - skala            # default - z config/product.yaml
+    - skala
