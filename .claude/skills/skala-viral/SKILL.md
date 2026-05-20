@@ -52,7 +52,8 @@ Uzyj **AskUserQuestion** z 4 pytaniami w **jednym wywolaniu** (multiSelect=false
    - "Storyteller - osobiste historie, dla Anny"
 
 3. **"Jak mocne CTA / dlugosc?"** header="CTA + dlugosc"
-   - "Soft CTA, 45s (Recommended) - 90% wartosc, mily push do quizu"
+   - "Value-only, 45s (Recommended dla trust building) - 95% konkretnej wartosci, ZERO sprzedazy, na koncu tylko 'wiecej na profilu' albo 'co Ty robisz inaczej?'"
+   - "Soft CTA, 45s - 90% wartosc, mily push do quizu w bio"
    - "Mid CTA, 45s - polowa edukacja, polowa sprzedaz Komplet"
    - "Hard CTA, 30s - kazde zdanie sprzedaje, scarcity Founders"
    - "VIP CTA, 60s - transformacja, hook na 5 miejsc 1:1"
@@ -65,7 +66,7 @@ Uzyj **AskUserQuestion** z 4 pytaniami w **jednym wywolaniu** (multiSelect=false
 **Mapowanie odpowiedzi na parametry wewnetrzne:**
 - `scripts_per_run` = 1/3/5/10
 - `tone` = balanced/anti_guru/hormozi/storyteller
-- `cta_intensity` = soft(20)/mid(50)/hard(80)/vip(95)
+- `cta_intensity` = value_only(5)/soft(20)/mid(50)/hard(80)/vip(95)
 - `target_seconds` = 30/45/60
 - `copy_similarity` = 40 (default, jak user chce inaczej moze zmienic w follow-up)
 - `research_mode` = swipe/manual/apify
@@ -181,13 +182,77 @@ Constraints:
 - Persona Marek: liczby/ROI/MRR/lejek/rate
 - Persona Anna: storytelling/empatia/krok-po-kroku/bezpiecznie
 
+**SPECJALNE REGULY DLA value_only (intensity 0-15):**
+
+Body MUSI byc PURE VALUE - widz wynosi konkretna wiedze nawet jak nigdy nie zobaczy Skali:
+- **3 kroki SOLVE = framework/lessons/observations**, NIE opis produktu Skali
+- Konkretne LICZBY (statystyki, koszty, czasy, %, ROI) - cytuj z rynku, nie ze Skali
+- Konkretne PRZYKLADY (anegdoty, case studies, "ostatnio klient mi powiedzial...")
+- **Maksymalnie 1 wzmianka o Skali** w body, jako "ja sam to mam zautomatyzowane" -
+  NIE jako pitch. To anegdota a nie reklama. Zero cen, zero pakietow, zero "link w bio".
+- Frameworks z nazwa: "Trzy filary contentu", "Reguly 80/20 w viralach", "Trzy
+  pytania ktore zadaje sobie przed nagraniem" - to ZAPAMIETUJE sie i buduje autorytet
+- Pattern interrupt mocniejszy - widz ma poczuc ZE NAUCZYL SIE czegos w 45 sekund
+
+Wzorce hookow w value_only:
+- "Wczoraj zobaczyles 100 filmikow. Zapamietales 2. Wiem dlaczego."
+- "97% tworcow popelnia ten jeden blad. Powiem ci ktory."
+- "Trzy reguly viralu ktorych nikt nie mowi glosno."
+- "Powiem ci cos co kosztowalo mnie [konkretna liczba] do nauczenia."
+
+Body example dla value_only (NIE TO ZAPISZ - to wzorzec):
+```
+HOOK: "97% tworcow popelnia ten jeden blad."
+
+AGITATE: Nagrywasz 30 filmikow w miesiacu. Trzy maja 1000 views, reszta 200.
+Mysleisz "to algorytm" - to nie algorytm.
+
+SOLVE (3 kroki = real framework):
+1. Pierwszy bial - nagrywasz POMYSL, nie HOOK. Hook to pierwsze dwa slowa
+   ktore lamia scroll. Bez tego widz nigdy nie dojedzie do meritum.
+2. Drugi blad - mowisz "dzisiaj pokaze" zamiast wbic od razu w temat.
+   Algorytm widzi 2-sekundowy retention drop i wylacza filmik.
+3. Trzeci - CTA na koncu. Algorytm liczy "completion rate". CTA "link w bio"
+   zmniejsza completion bo widz wychodzi przed koncem.
+
+PATTERN INTERRUPT: Ja sam to mam zautomatyzowane - generator analizuje 1000
+viralow dziennie i wyciaga te wzorce za mnie. Ale wzorzec dziala niezaleznie
+od tego czy uzywasz narzedzia, czy nagrywasz recznie.
+
+CTA: Save sobie ten filmik - bedziesz wracal.
+```
+
+Jak widzisz - Skala wspomniana RAZ jako anegdota. 90% wartosci to konkretne
+lessons ktore Marek/Anna moze uzyc OD JUTRA bez kupowania niczego.
+
 **4d. CTA - dopasuj do intensity**
 
-Z `cta_slots` w user_voice.yaml:
-- soft (intensity 0-30): "Wbij w bio, zrob quiz w 60 sekund, zobaczysz ktory z 4 modeli pasuje do ciebie."
-- mid (30-70): "Link w bio prowadzi do quizu - 7 pytan, masz darmowy plan. 50 miejsc Founders zostalo."
-- hard (70-90): "Cena Founders -40% zlocked-in dozywotnio. Pakiet Komplet 1498 zl miesiac zamiast 7990. Link w bio."
-- vip (90-100): "Otwieram 5 miejsc VIP. 3 miesiace jeden-na-jeden. Gwarancja 5 tysiecy zarobku albo kontynuacja gratis. Aplikuj w bio."
+**value_only (intensity 0-15)** - TRUST BUILDING MODE:
+NIE sprzedajesz. NIE wspominasz pakietow, cen, miejsc, quizu. Produkt moze
+wyskoczyc raz w body jako "ja sam to mam zautomatyzowane" / "moj system to robi"
+ale to ANEGDOTA, nie reklama. Na koncu wybierz JEDNO z:
+- "Save sobie ten filmik na potem - bedziesz tu wracal."
+- "Daj znac w komentarzu co Ty robisz inaczej."
+- "Subskrybuj jak chcesz wiecej takich obserwacji."
+- "Wiecej takich rzeczy na moim profilu."
+- "Komentarz: 'tak' jak chcesz wiecej tego typu."
+- LUB ZERO CTA - zakoncz konkretna mysla / pattern interruptem (najmocniejsze
+  dla trust-building, widz sam Cie znajdzie)
+
+NIE wspominaj o systemskala.pl, NIE wspominaj o "linku w bio", NIE wspominaj
+o cenach. Trust mode = ZERO sprzedazy.
+
+**soft (intensity 15-35)**:
+> "Wbij w bio, zrob quiz w 60 sekund, zobaczysz ktory z 4 modeli pasuje do ciebie."
+
+**mid (intensity 35-70)**:
+> "Link w bio prowadzi do quizu - 7 pytan, masz darmowy plan. 50 miejsc Founders zostalo."
+
+**hard (intensity 70-90)**:
+> "Cena Founders -40% zlocked-in dozywotnio. Pakiet Komplet 1498 zl miesiac zamiast 7990. Link w bio."
+
+**vip (intensity 90-100)**:
+> "Otwieram 5 miejsc VIP. 3 miesiace jeden-na-jeden. Gwarancja 5 tysiecy zarobku albo kontynuacja gratis. Aplikuj w bio."
 
 Dorzuc 1 element risk_reversal jesli intensity >= mid.
 
@@ -210,8 +275,17 @@ Przed zapisaniem - sprawdz kazdy skrypt:
 - [ ] Hook max 12 slow, max 8 sek mowienia
 - [ ] Body 75-150 slow
 - [ ] Struktura HOOK->AGITATE->3 KROKI->PATTERN_INTERRUPT->CTA jest widoczna
-- [ ] CTA zawiera link/quiz/checkout
 - [ ] Persona-fit: Marek dostaje liczby, Anna dostaje storytelling
+
+**Jesli intensity = soft/mid/hard/vip:**
+- [ ] CTA zawiera link/quiz/checkout
+
+**Jesli intensity = value_only:**
+- [ ] CTA NIE zawiera "link w bio", NIE zawiera "quiz", NIE zawiera "Founders",
+      NIE zawiera "Pakiet", NIE zawiera cen w PLN
+- [ ] Maksymalnie 1 wzmianka o Skali w body (jako anegdota, nie pitch)
+- [ ] 3 kroki SOLVE = real framework/lessons ktore widz moze uzyc bez kupowania
+- [ ] CTA jest community-driven (save/comment/follow) lub w ogóle ZERO CTA
 
 Jesli ktorys check fail - regeneruj ten skrypt (max 3 proby).
 
@@ -405,8 +479,26 @@ Nadpisac? Dolozyc? Suffix -v2?"
 
 1. **NIGDY nie pisz "Czesc dzisiaj pokaze"** - to instant fail.
 2. **Hook MUSI byc pattern interruptem** - liczba, szok, kontrarian, pytanie, cytat.
-3. **CTA zawsze kieruje do BIO/QUIZU** - NIE do checkout direkt (przeskakuje 90% sprzedazy).
-4. **Marek dostaje liczby. Anna dostaje storie.** Nigdy odwrotnie.
-5. **Banned phrases = fail.** Jesli wypadnie w generowaniu - regeneruj.
-6. **Pakiet 3 (KOMPLET) to 70% domyslnych CTA.** Pakiet 4 (VIP) tylko 10% i tylko hi-trust hooki.
-7. **Founders -40% scarcity** - uzywaj naturalnie, nie spamuj.
+3. **W trybach soft/mid/hard/vip - CTA kieruje do BIO/QUIZU** - NIE do checkout direkt.
+4. **W trybie value_only - ZERO sprzedazy.** Produkt to anegdota raz w body, nigdy w CTA.
+   Domyslny tryb dla **trust-building stage** = value_only.
+5. **Marek dostaje liczby. Anna dostaje storie.** Nigdy odwrotnie.
+6. **Banned phrases = fail.** Jesli wypadnie w generowaniu - regeneruj.
+7. **Pakiet 3 (KOMPLET) to 70% domyslnych CTA.** Pakiet 4 (VIP) tylko 10% i tylko hi-trust hooki.
+8. **Founders -40% scarcity** - uzywaj naturalnie, nie spamuj. NIE w value_only.
+
+## TRUST-BUILDING DOCTRINE (priorytet dla Eryka teraz)
+
+Eryk jest w fazie **budowania zaufania**, nie konwersji. To znaczy:
+
+- Domyslny mode = **value_only** (chyba ze user explicite poprosi inaczej)
+- Kazdy skrypt MUSI dac konkretna wiedze nawet jak widz nigdy nie zobaczy Skali
+- 3 kroki SOLVE = **real framework**, NIE feature list produktu
+- Skala wspomniana max RAZ w body jako anegdota ("ja sam to mam zautomatyzowane" w
+  kontekscie - to brzmi naturalnie i podswiadomie buduje pozycje eksperta)
+- CTA = community-driven (save / comment / follow) lub ZERO CTA
+- Hook musi obiecywac REAL LEARNING ("3 reguly", "97% bledow", "to czego nikt nie mowi") -
+  to lamie scroll lepiej niz "pokaze ci jak"
+- Pattern interrupt na koncu - mocny insight ktory widz wynosi i opowie kolezance
+
+Ta doktryna obowiazuje DOMYSLNIE az do momentu gdy Eryk powie "wlaczamy sprzedaz".
