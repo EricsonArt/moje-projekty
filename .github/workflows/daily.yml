@@ -1,10 +1,14 @@
 name: Daily viral scripts
 
+# AUTOMATYCZNY CRON WYLACZONY 2026-05-20 - bo zuzywal tokeny Apify codziennie
+# nawet jak Eryk nie nagrywal. Skrypty generujemy teraz lokalnie przez skill
+# /viral w Claude Code (zero kosztu, swipe-mode default).
+#
+# Ten workflow zostaje tylko jako MANUAL trigger - mozna go uruchomic recznie
+# przez GitHub UI (Actions -> Daily viral scripts -> Run workflow) gdy chcesz
+# pelny pipeline z Apify scrape + wysylka na Telegram.
+
 on:
-  schedule:
-    # 05:00 UTC = 06:00 PL zima / 07:00 PL lato. Skrypty czekaja zanim wstaniesz.
-    # UWAGA: cron dziala TYLKO na default branch (main).
-    - cron: "0 5 * * *"
   workflow_dispatch:
     inputs:
       skip_telegram:

@@ -502,3 +502,23 @@ Eryk jest w fazie **budowania zaufania**, nie konwersji. To znaczy:
 - Pattern interrupt na koncu - mocny insight ktory widz wynosi i opowie kolezance
 
 Ta doktryna obowiazuje DOMYSLNIE az do momentu gdy Eryk powie "wlaczamy sprzedaz".
+
+---
+
+## WAZNE: AUTOMATYCZNY CRON WYLACZONY (2026-05-20)
+
+Workflow `.github/workflows/daily.yml` mial cron `0 5 * * *` (codziennie 5:00 UTC)
+ktory odpalal pelen pipeline z Apify scrape + wysylka na Telegram. To zostalo
+**wylaczone** zeby nie zuzywac tokenow Apify gdy Eryk nie nagrywa.
+
+Teraz dziala tak:
+- **Codziennie automatycznie**: NIC. Cron usuniety. Zero kosztow.
+- **Generowanie skryptow**: tylko przez ten skill (`/viral` lub naturalny prompt) -
+  lokalnie w Claude Code, swipe-mode default, zero Apify, zero Telegram.
+- **Pelen pipeline (Apify + Telegram)**: nadal dostepny, ale TYLKO RECZNIE -
+  GitHub UI -> Actions -> "Daily viral scripts" -> "Run workflow". Eryk klika
+  gdy chce.
+
+Jesli Eryk pyta "czy to sie samo odpali jutro rano?" - odpowiedz: NIE. Cron
+usuniety. Sprawdz `.github/workflows/daily.yml` - sekcji `schedule:` nie ma,
+tylko `workflow_dispatch:` (manual trigger).
